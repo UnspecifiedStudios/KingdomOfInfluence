@@ -34,6 +34,7 @@
 # Visual Studio cache directory
 .vs/
 .vscode/
+.vsconfig
 *.slnx
 
 # Gradle cache directory
