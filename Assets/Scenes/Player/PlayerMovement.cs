@@ -59,6 +59,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnDodge(InputAction.CallbackContext context)
     {
+        // TODO: Implement a check to see if user has enough stamina before starting dodge
         if (context.performed && !isDodging)
         {
             Vector3 forward = cameraTransform.forward;
