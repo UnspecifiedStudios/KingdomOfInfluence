@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Runtime.CompilerServices;
 using System.Timers;
 using UnityEditor.Rendering.Canvas.ShaderGraph;
 using UnityEngine;
@@ -13,6 +14,8 @@ public class PlayerMovement : MonoBehaviour
     public float dodgeDistance = 5f;
     public float dodgeDuration = 1f;
     public Transform cameraTransform;
+    public float dodgeStaminaCost = 20f;
+    public float runStaminaCost = 2f;
 
     CharacterController controller;
     private Vector2 moveInput;
@@ -24,15 +27,27 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 dodgeDirection;
     private float dodgeSpeed;
     private float verticalVelocity;
+    private PlayerStats playerStats;
 
     private void Awake()
     {
+        runStaminaCost *= 10; // make it 10x as potent
         controller = GetComponent<CharacterController>();
+    }
+
+    /*
+     * Get player stats after it initializes with it's own awake function
+    */
+    private void Start()
+    {
+        playerStats = transform.parent.Find("Stats").GetComponent<PlayerStats>();
     }
     public void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
     }
+
+
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -56,11 +71,14 @@ public class PlayerMovement : MonoBehaviour
             isHoldingRun = false;
         }
     }
-
+    
+    /* 
+     * OnDodge function will check to see if player can dodge, remove the required stamina,
+     * and then will make the necessary calculations for movement. It will then start the coroutine.
+     */
     public void OnDodge(InputAction.CallbackContext context)
     {
-        // TODO: Implement a check to see if user has enough stamina before starting dodge
-        if (context.performed && !isDodging)
+        if (context.performed && !isDodging && playerStats.Stamina.TryConsume(dodgeStaminaCost)) 
         {
             Vector3 forward = cameraTransform.forward;
             Vector3 right = cameraTransform.right;
@@ -77,6 +95,9 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    /*
+     * Coroutine for dodge. carries out the actual movement.
+    */
     IEnumerator DodgeCoroutine()
     {
         isDodging = true;
@@ -104,7 +125,7 @@ public class PlayerMovement : MonoBehaviour
         isDodging = false;
     }
 
-    // Update is called once per frame
+    // FixedUpdate (main movement)
     void Update()
     {
         // only do if not dodging
@@ -125,7 +146,7 @@ public class PlayerMovement : MonoBehaviour
 
         // check if user is sprinting and apply move multiplier
         // TODO: Implement a check to see if user has enough stamina before running
-        if (isHoldingRun)
+        if (isHoldingRun && playerStats.Stamina.TryConsume(runStaminaCost * Time.deltaTime))
         {
             movement *= defaultSpeed * sprintSpeedMult;
         }
