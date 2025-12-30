@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics.Contracts;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,16 +7,25 @@ public class PlayerCombat : MonoBehaviour
 {
     public float lightAttackDuration = 1.5f;
     public float heavyAttackDuration = 2f;
+    public float shieldDuration = 3.5f;
+    public float beamAttackDuration = 3f;
     public GameObject lightAttackHitbox;
     public GameObject heavyAttackHitbox;
+    public GameObject shieldHitbox;
+    public GameObject beamAttackHitbox;
 
-    public bool isLightAttacking = false;
-    public bool isHeavyAttacking = false;
-    public bool isCurrentlyAttacking = false;
+    private bool isLightAttacking = false;
+    private bool isHeavyAttacking = false;
+    public bool isBeamAttacking = false;
+    public bool isShielding = false;
+    private bool attackCurrentlyActive = false;
+    public bool shieldCurrentlyActive = false;
+    
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        //Stub for now; may need to do something here later
     }
 
     /* Read user input to check if they are pressing light attack button via
@@ -54,33 +64,51 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    /* Read user input to check if they are pressing shield button via
+     * InputAction bindings - "Shield"
+     * 
+     * NOTE: This is the temporary/alternative method for acquiring the shield
+     * input from player; webcam integration still pending
+     */
+    public void OnShield(InputAction.CallbackContext context)
+    {
+        //if button pressed, then shielding is true
+        if (context.performed)
+        {
+            isShielding = true;
+        }
+
+        //otherwise, shielding is false
+        else if (context.canceled)
+        {
+            isShielding = false;
+        }
+    }
+
+    /* Read user input to check if they are pressing beam attack button via
+     * InputAction bindings - "BeamAttack"
+     * 
+     * NOTE: This is the temporary/alternative method for acquiring the beam
+     * attack input from player; webcam integration still pending
+     */
+    public void OnBeamAttack(InputAction.CallbackContext context)
+    {
+        //if button pressed, then beam attacking is true
+        if (context.performed)
+        {
+            isBeamAttacking = true;
+        }
+
+        //otherwise, beam attacking is false
+        else if (context.canceled)
+        {
+            isBeamAttacking = false;
+        }
+    }
+
     private void LightAttackAction()
     {
         StartCoroutine(LightAttackCoroutine());
-        /*
-        //initialize variables
-        float timeElapsed = 0f;
-
-        //set currently attacking to true
-        isCurrentlyAttacking = true;
-        print(isLightAttacking);
-
-        //while elapsed time is less than attack duration
-        while (timeElapsed < lightAttackDuration)
-        {
-            //spawn a hitbox that moves forward and last for a brief amount of time
-            lightAttackHitbox.SetActive(true);
-
-            //update elapsed time
-            timeElapsed += Time.deltaTime;
-            print(timeElapsed);
-        }
-
-        //set currently attacking to false
-        isCurrentlyAttacking = false;
-
-        lightAttackHitbox.SetActive(false);
-        */
     }
 
    IEnumerator LightAttackCoroutine()
@@ -88,15 +116,13 @@ public class PlayerCombat : MonoBehaviour
         //initialize variables
         float timeElapsed = 0f;
 
-        //set currently attacking to true
-        isCurrentlyAttacking = true;
+        //set currently attacking to true, and activate the light attack hitbox
+        attackCurrentlyActive = true;
+        lightAttackHitbox.SetActive(true);
 
-        //while elapsed time is less than attack duration
+        //keep light attack hitbox active while elapsed time is less than attack duration
         while (timeElapsed < lightAttackDuration)
         {
-            //spawn a hitbox that moves forward and last for a brief amount of time
-            lightAttackHitbox.SetActive(true);
-
             //update elapsed time
             timeElapsed += Time.deltaTime;
 
@@ -105,35 +131,13 @@ public class PlayerCombat : MonoBehaviour
         }
 
         //set currently attacking to false, and deactivate light attack hitbox
-        isCurrentlyAttacking = false;
+        attackCurrentlyActive = false;
         lightAttackHitbox.SetActive(false);
     }
 
     private void HeavyAttackAction()
     {
         StartCoroutine(HeavyAttackCoroutine());
-        /*
-        //initialize variables
-        float timeElapsed = 0f;
-
-        //set currently attacking to true
-        isCurrentlyAttacking = true;
-
-        //while elapsed time is less than attack duration
-        while (timeElapsed < heavyAttackDuration)
-        {
-            //spawn a hitbox that moves forward and last for a brief amount of time
-            heavyAttackHitbox.SetActive(true);
-
-            //update elapsed time
-            timeElapsed += Time.deltaTime;
-        }
-
-        //set currently attacking to false
-        isCurrentlyAttacking = false;
-
-        heavyAttackHitbox.SetActive(false);
-        */
     }
 
     IEnumerator HeavyAttackCoroutine()
@@ -141,15 +145,13 @@ public class PlayerCombat : MonoBehaviour
         //initialize variables
         float timeElapsed = 0f;
 
-        //set currently attacking to true
-        isCurrentlyAttacking = true;
+        //set currently attacking to true, and activate heavy attack hitbox
+        attackCurrentlyActive = true;
+        heavyAttackHitbox.SetActive(true);
 
         //while elapsed time is less than attack duration
         while (timeElapsed < heavyAttackDuration)
         {
-            //spawn a hitbox that moves forward and last for a brief amount of time
-            heavyAttackHitbox.SetActive(true);
-
             //update elapsed time
             timeElapsed += Time.deltaTime;
 
@@ -158,26 +160,93 @@ public class PlayerCombat : MonoBehaviour
         }
 
         //set currently attacking to false, and deactivate heavy attack hitbox
-        isCurrentlyAttacking = false;
+        attackCurrentlyActive = false;
         heavyAttackHitbox.SetActive(false);
     }
+
+    private void ShieldAction()
+    {
+        StartCoroutine(ShieldCoroutine());
+    }
+
+    IEnumerator ShieldCoroutine()
+    {
+        //initialize variables
+        float timeElapsed = 0f;
+
+        //set currently shielding to true, and activate shield hitbox
+        shieldCurrentlyActive = true;
+        shieldHitbox.SetActive(true);
+
+        //while elapsed time is less than shield duration
+        while (timeElapsed < shieldDuration)
+        {
+            //update elapsed time
+            timeElapsed += Time.deltaTime;
+
+            //yield return to resume in the next frame
+            yield return null;
+        }
+
+        //set currently shielding to false, and deactivate shield hitbox
+        shieldCurrentlyActive = false;
+        shieldHitbox.SetActive(false);
+    }
+
+    private void BeamAttackAction()
+    {
+        StartCoroutine(BeamAttackCoroutine());
+    }
+
+    IEnumerator BeamAttackCoroutine()
+    {
+        //initialize variables
+        float timeElapsed = 0f;
+
+        //set currently attacking to true, and activate beam hitbox
+        attackCurrentlyActive = true;
+        beamAttackHitbox.SetActive(true);
+
+        //while elapsed time is less than beam duration
+        while (timeElapsed < beamAttackDuration)
+        {
+            //update elapsed time
+            timeElapsed += Time.deltaTime;
+
+            //yield return to resume in the next frame
+            yield return null;
+        }
+
+        //set currently attacking to false, and deactivate beam hitbox
+        attackCurrentlyActive = false;
+        beamAttackHitbox.SetActive(false);
+    }
+
     // Update is called once per frame
     void Update()
     {
         //if player inputs light attack and no attack is currently active, then perform light attack action
-        if(isLightAttacking && !isCurrentlyAttacking) 
+        if(isLightAttacking && !attackCurrentlyActive) 
         {
             LightAttackAction();
         }
 
         //if player inputs heavy no attack is currently active, then perform heavy attack action
-        if (isHeavyAttacking && !isCurrentlyAttacking)
+        if (isHeavyAttacking && !attackCurrentlyActive)
         {
             HeavyAttackAction();
         }
 
-        //if player inputs shield button,then perform shield action
+        //if player inputs shield button and shield is currently not active, then perform shield action
+        if (isShielding && !shieldCurrentlyActive)
+        {
+            ShieldAction();
+        }
 
-        //if player inputs beam button, then perform beam action
+        //if player inputs beam button and beam is currently not active, then perform beam action
+        if(isBeamAttacking && !attackCurrentlyActive)
+        {
+            BeamAttackAction();
+        }
     }
 }
