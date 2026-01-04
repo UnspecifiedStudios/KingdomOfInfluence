@@ -46,7 +46,7 @@
                     "name": "Crouch",
                     "type": "Button",
                     "id": "27c5f898-bc57-4ee1-8800-db469aca5fe3",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -91,6 +91,15 @@
                     "name": "Dodge",
                     "type": "Button",
                     "id": "d1774cb1-7705-49ad-bf9c-aec95fd6037b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Quest",
+                    "type": "Button",
+                    "id": "e04bd484-93b9-43e4-a535-5e5a28b2cd6d",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -502,6 +511,17 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "Dodge",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f8b4d1ad-534b-4d56-bea1-c3923a66dee7",
+                    "path": "<Keyboard>/j",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Quest",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
