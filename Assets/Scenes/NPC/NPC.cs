@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class NPC : MonoBehaviour, IInteractable
 {
+    [SerializeField, Header("Unique identifier for this NPC (string)")]
+    private string npcID;
+    [SerializeField, Header("Starting dialogue node for this NPC")]
+    private DialogueNode startNode;
+
     public void OnTriggerEnter(Collider other)
     {
         // check if player entered trigger
@@ -22,9 +27,10 @@ public class NPC : MonoBehaviour, IInteractable
         }
     }
 
-    public void Interact()
+    public void Interact(GameObject player)
     {
         Debug.Log("NPC interacted with!");
-        // Add additional interaction logic here
+        
+        player.GetComponent<DialogueManager>().StartDialogue(npcID, startNode);
     }
 }
