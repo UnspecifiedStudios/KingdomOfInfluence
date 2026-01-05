@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using TMPro;
+using System.Diagnostics;
+using System.IO;
 
 public class UDPExpressionReceiver : MonoBehaviour {
     public int port = 5005;
@@ -13,13 +15,7 @@ public class UDPExpressionReceiver : MonoBehaviour {
     private UdpClient udpClient;
     private Thread receiveThread;
     private bool running = false;
-
-    void Start() {
-        if (UnityMainThreadDispatcher.Instance() == null) {
-            Debug.LogError("Dispatcher missing! Add UnityMainThreadDispatcher to scene.");
-            return;
-        }
-
+    void Awake() {
         udpClient = new UdpClient(port);
         running = true;
 
@@ -27,7 +23,38 @@ public class UDPExpressionReceiver : MonoBehaviour {
         receiveThread.IsBackground = true;
         receiveThread.Start();
 
-        Debug.Log("🎧 Listening for mocap data on port " + port);
+        UnityEngine.Debug.Log("🎧 Listening for mocap data on port " + port);
+    }
+    void Start() {
+
+        string script = Path.Combine(
+            Application.dataPath,
+            "Scenes",
+            "Webcam",
+            "FaceTracking.py"
+        );
+
+        UnityEngine.Debug.Log("Python script path: " + script);
+
+        if (!File.Exists(script)) {
+            UnityEngine.Debug.LogError("SCRIPT NOT FOUND: " + script);
+            return;
+        }
+
+        ProcessStartInfo psi = new ProcessStartInfo {
+            FileName = "py",
+            Arguments = $"-3.11 \"{script}\"",
+            UseShellExecute = false,
+            CreateNoWindow = false
+        };
+
+        try {
+            Process p = Process.Start(psi);
+
+            UnityEngine.Debug.Log("🐍 Python process started (PID: " + p.Id + ")");
+        } catch (Exception e) {
+            UnityEngine.Debug.LogError("Failed to start FaceTracking.py:\n" + e);
+        }
     }
 
     void ReceiveLoop() {
