@@ -487,12 +487,6 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Quest",
-                    "id": "45f77fc3-8390-4f67-a3b0-8898e544f04b",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "HeavyAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -503,6 +497,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
+                    "action": "HeavyAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7ed37b48-4fbd-409f-9185-fa27940f468e",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
                     "action": "HeavyAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
