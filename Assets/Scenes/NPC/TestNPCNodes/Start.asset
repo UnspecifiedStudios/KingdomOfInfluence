@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21a9af804e2cb764fa8d7740c50b9800, type: 3}
+  m_Name: Start
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueNode
+  speakerName: TEST
+  dialogueText: Hello! I am a test npc. Pick an option!
+  choices:
+  - choiceText: What is your favorite color?
+    actions: 1
+    questID: 
+    nextNode: {fileID: 11400000, guid: 9f728a2adb631434aa753b91b58b1485, type: 2}
+  - choiceText: Give me a quest!
+    actions: 1
+    questID: 
+    nextNode: {fileID: 11400000, guid: 7a4948acb662cfa4d8913471a85ff7ad, type: 2}
+  - choiceText: IDK what to ask anymore?
+    actions: 4
+    questID: 
+    nextNode: {fileID: 11400000, guid: 85f5980c2c433fa4a821e08b3e896215, type: 2}
+  - choiceText: Kill me
+    actions: 8
+    questID: 
+    nextNode: {fileID: 11400000, guid: 7304fa728a1595e4181ccea11f4dd9dc, type: 2}
