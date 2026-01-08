@@ -16,18 +16,26 @@ MonoBehaviour:
   dialogueText: Hello! I am a test npc. Pick an option!
   choices:
   - choiceText: What is your favorite color?
+    requiredRep: 0
     actions: 1
-    questID: 
+    questData: {fileID: 0}
+    repChange: 0
     nextNode: {fileID: 11400000, guid: 9f728a2adb631434aa753b91b58b1485, type: 2}
   - choiceText: Give me a quest!
+    requiredRep: 0
     actions: 1
-    questID: 
+    questData: {fileID: 0}
+    repChange: 0
     nextNode: {fileID: 11400000, guid: 7a4948acb662cfa4d8913471a85ff7ad, type: 2}
   - choiceText: IDK what to ask anymore?
+    requiredRep: 0
     actions: 4
-    questID: 
+    questData: {fileID: 0}
+    repChange: 0
     nextNode: {fileID: 11400000, guid: 85f5980c2c433fa4a821e08b3e896215, type: 2}
   - choiceText: Kill me
+    requiredRep: 0
     actions: 8
-    questID: 
+    questData: {fileID: 0}
+    repChange: 0
     nextNode: {fileID: 11400000, guid: 7304fa728a1595e4181ccea11f4dd9dc, type: 2}

@@ -9,6 +9,8 @@ public class DialogueManager : MonoBehaviour
     private Dictionary<string, DialogueNode> currentNodes = new Dictionary<string, DialogueNode>();
     [SerializeField]
     private QuestManager questManager;
+    [SerializeField]
+    private ReputationManager reputationManager;
 
     // ui components
     [SerializeField]
@@ -45,19 +47,29 @@ public class DialogueManager : MonoBehaviour
         // populate UI with current node data
         dialogueText.text = currentNode.dialogueText;
 
+        int buttonIndex = 0;
         for (int i = 0; i < currentNode.choices.Count; i++)
         {
-            choicesButtons[i].buttonText.text = currentNode.choices[i].choiceText;
-            choicesButtons[i].button.gameObject.SetActive(true);
-            choicesButtons[i].button.onClick.RemoveAllListeners();
+            // check if reputation requirement is met
+            if (reputationManager.GetReputation(npcID) < currentNode.choices[i].requiredRep)
+            {
+                // hide button if requirement not met
+                choicesButtons[buttonIndex].button.gameObject.SetActive(false);
+                continue;
+            }
+            choicesButtons[buttonIndex].buttonText.text = currentNode.choices[i].choiceText;
+            choicesButtons[buttonIndex].button.gameObject.SetActive(true);
+            choicesButtons[buttonIndex].button.onClick.RemoveAllListeners();
 
             int choiceIndex = i; // capture index for closure
 
             AddListenerToChoice(choiceIndex, npcID, currentNode.choices[choiceIndex].actions);
+
+            buttonIndex++;
         }
 
         // hide unused buttons
-        for (int i = currentNode.choices.Count; i < 4; i++)
+        for (int i = buttonIndex; i < 4; i++)
         {
             choicesButtons[i].button.gameObject.SetActive(false);
         }
@@ -117,8 +129,14 @@ public class DialogueManager : MonoBehaviour
         {
             choicesButtons[buttonIndex].button.onClick.AddListener(() =>
             {
-                // currentNodes[npcID] = currentNodes[npcID].choices[buttonIndex].nextNode;
                 EndDialogue();
+            });
+        }
+        if ((actions & DialogueChoiceAction.UpdateReputation) != 0)
+        {
+            choicesButtons[buttonIndex].button.onClick.AddListener(() =>
+            {
+                reputationManager.UpdateReputation(npcID, currentNodes[npcID].choices[buttonIndex].repChange);
             });
         }
     }
