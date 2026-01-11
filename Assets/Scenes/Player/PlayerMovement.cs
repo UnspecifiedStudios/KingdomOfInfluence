@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform cameraTransform;
     public float dodgeStaminaCost = 20f;
     public float runStaminaCost = 2f;
+    public float rotationSpeed = 500f;
 
     CharacterController controller;
     private Vector2 moveInput;
@@ -28,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
     private float dodgeSpeed;
     private float verticalVelocity;
     private PlayerStats playerStats;
+    private Quaternion rotationDirection;
 
     private void Awake()
     {
@@ -173,5 +175,18 @@ public class PlayerMovement : MonoBehaviour
 
         // move the player
         controller.Move(movement * Time.deltaTime);
+
+        // check if player is moving in any x or z direction
+        if(movement.x != 0 && movement.z != 0)
+        {
+            // instantiate new vector thats copied from movement, but with y-axis/gravity zeroed out
+            Vector3 movementWithoutGrav = new Vector3(movement.x, 0, movement.z);
+
+            // calculate rotation direction with new copied vector
+            rotationDirection = Quaternion.LookRotation(movementWithoutGrav, Vector3.up);
+
+            // rotate the player's transform
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, rotationDirection, rotationSpeed * Time.deltaTime);
+        }
     }
 }

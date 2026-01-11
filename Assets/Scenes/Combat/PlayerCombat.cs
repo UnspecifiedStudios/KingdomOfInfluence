@@ -16,10 +16,10 @@ public class PlayerCombat : MonoBehaviour
 
     private bool isLightAttacking = false;
     private bool isHeavyAttacking = false;
-    public bool isBeamAttacking = false;
-    public bool isShielding = false;
+    private bool isBeamAttacking = false;
+    private bool isShielding = false;
     private bool attackCurrentlyActive = false;
-    public bool shieldCurrentlyActive = false;
+    private bool shieldCurrentlyActive = false;
     
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -66,9 +66,6 @@ public class PlayerCombat : MonoBehaviour
 
     /* Read user input to check if they are pressing shield button via
      * InputAction bindings - "Shield"
-     * 
-     * NOTE: This is the temporary/alternative method for acquiring the shield
-     * input from player; webcam integration still pending
      */
     public void OnShield(InputAction.CallbackContext context)
     {
@@ -87,9 +84,6 @@ public class PlayerCombat : MonoBehaviour
 
     /* Read user input to check if they are pressing beam attack button via
      * InputAction bindings - "BeamAttack"
-     * 
-     * NOTE: This is the temporary/alternative method for acquiring the beam
-     * attack input from player; webcam integration still pending
      */
     public void OnBeamAttack(InputAction.CallbackContext context)
     {
