@@ -1,4 +1,8 @@
+using System.Numerics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
@@ -7,12 +11,38 @@ public class Health : MonoBehaviour
     public float CurrentHealth { get; private set; }
     public float MaxHealth => maxHealth;
 
+    [Header("UI Objects")]
+    public Image healthIconSource;
+    public Sprite healthIconTrue;
+    public Sprite healthIconFalse;
+    public GameObject healthBar;
+    public int barEmptyXPosition;
+    public int barFullXPosition;
+
     public bool IsDead { get; private set; }
+    
+    //private vars
+    private float healthBarPosition;
+    private float positionDifference;
 
     private void Awake()
     {
         CurrentHealth = maxHealth;
         IsDead = false;
+        
+    }
+
+    private void Start()
+    {
+        healthIconSource.sprite = healthIconTrue; 
+    }
+
+    private void Update()
+    {
+        // update the health bar
+        positionDifference = barFullXPosition - barEmptyXPosition;
+        healthBarPosition = -1 * (positionDifference - ((CurrentHealth / maxHealth) * positionDifference));
+        healthBar.transform.localPosition = new UnityEngine.Vector3(healthBarPosition, 0f, 0f);
     }
 
     public void Damage(float amount)
@@ -24,6 +54,7 @@ public class Health : MonoBehaviour
         if (CurrentHealth <= 0f)
         {
             IsDead = true;
+            healthIconSource.sprite = healthIconFalse;
         }
     }
 
