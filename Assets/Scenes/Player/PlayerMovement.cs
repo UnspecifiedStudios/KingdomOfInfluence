@@ -171,6 +171,7 @@ public class PlayerMovement : MonoBehaviour
         {
             // make them jump
             verticalVelocity = jumpForce;
+            playerStats.Health.Damage(20f);
         }
 
         // move the player

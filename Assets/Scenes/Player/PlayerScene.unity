@@ -562,14 +562,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 4902726162678113138, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: runStaminaCost
-      value: 3.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4902726162678113138, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: dodgeStaminaCost
-      value: 30
-      objectReference: {fileID: 0}
     - target: {fileID: 5375827163334387708, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
