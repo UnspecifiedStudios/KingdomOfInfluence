@@ -8,6 +8,8 @@ public class ParallaxObjClass
     public GameObject prlxObj;
     public float prlxXMult;
     public float prlxYMult;
+    [HideInInspector]
+    public Vector3 originalCoordinates;
 }
 
 public class ParallaxMainMenu : MonoBehaviour
@@ -30,6 +32,10 @@ public class ParallaxMainMenu : MonoBehaviour
     void Start()
     {
         screenDimensions = new Vector2(Screen.width, Screen.height);
+        foreach (ParallaxObjClass obj in parallaxObjects)
+        {
+            obj.originalCoordinates = obj.prlxObj.transform.localPosition;
+        }
     }
 
     // Update is called once per frame
@@ -43,7 +49,7 @@ public class ParallaxMainMenu : MonoBehaviour
         {
             calculatedXPosValue = mouseXDiff * (obj.prlxXMult / 100);
             calculatedYPosValue = mouseYDiff * (obj.prlxYMult / 100);
-            Vector3 newPosition = new Vector3(allXParallaxCoefficient * calculatedXPosValue, allYParallaxCoefficient * calculatedYPosValue, 0f);
+            Vector3 newPosition = new Vector3((allXParallaxCoefficient * calculatedXPosValue) + obj.originalCoordinates.x, (allYParallaxCoefficient * calculatedYPosValue) + obj.originalCoordinates.y, 0f);
             obj.prlxObj.transform.localPosition = newPosition;
         }
     }
