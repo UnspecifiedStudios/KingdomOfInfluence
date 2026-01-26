@@ -81,18 +81,19 @@ while cap.isOpened():
 
             norm_mouth_width = mouth_width / face_width
             norm_mouth_open = mouth_open / face_width
+            #print(cornerToBottom)
             norm_eye_open = (left_eye_open + right_eye_open) / (2 * face_width)
 
             expression = ""
 
             if norm_mouth_width > 0.4 and norm_mouth_open < 0.05:
-                expression = "(˶ᵔ ᵕ ᵔ˶)"
+                expression = 1
             elif norm_mouth_open > 0.08:
-                expression = "( O _ O )"
+                expression = 2
+            elif cornerToBottom < -0.008:
+                expression = 3
             elif norm_eye_open < 0.02:
-                expression = "(ᴗ˳ᴗ)ᶻ"
-            elif cornerToBottom < -0.015:
-                expression = "(╥.╥)"
+                expression = 4
 
             if expression:
                 print(expression)

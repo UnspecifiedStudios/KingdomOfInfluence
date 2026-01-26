@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using TMPro;
-using System.Diagnostics;
-using System.IO;
 
 public class UDPExpressionReceiver : MonoBehaviour {
     public int port = 5005;
@@ -15,6 +13,23 @@ public class UDPExpressionReceiver : MonoBehaviour {
     private UdpClient udpClient;
     private Thread receiveThread;
     private bool running = false;
+
+    // The faces to display (matches enum in RandomFaceScript)
+    public string[] playerFaces = {
+        "(˶ᵔ ᵕ ᵔ˶)",
+        "( O _ O ))",
+        "(╥.╥)"
+    };
+
+    // Public field to be read by RandomFaceScript
+    [HideInInspector]
+    public int expression = -1;
+
+    [Serializable]
+    private class ExpressionData {
+        public string expression;
+    }
+
     void Awake() {
         udpClient = new UdpClient(port);
         running = true;
@@ -23,38 +38,7 @@ public class UDPExpressionReceiver : MonoBehaviour {
         receiveThread.IsBackground = true;
         receiveThread.Start();
 
-        UnityEngine.Debug.Log("🎧 Listening for mocap data on port " + port);
-    }
-    void Start() {
-
-        string script = Path.Combine(
-            Application.dataPath,
-            "Scenes",
-            "Webcam",
-            "FaceTracking.py"
-        );
-
-        UnityEngine.Debug.Log("Python script path: " + script);
-
-        if (!File.Exists(script)) {
-            UnityEngine.Debug.LogError("SCRIPT NOT FOUND: " + script);
-            return;
-        }
-
-        ProcessStartInfo psi = new ProcessStartInfo {
-            FileName = "py",
-            Arguments = $"-3.11 \"{script}\"",
-            UseShellExecute = false,
-            CreateNoWindow = false
-        };
-
-        try {
-            Process p = Process.Start(psi);
-
-            UnityEngine.Debug.Log("🐍 Python process started (PID: " + p.Id + ")");
-        } catch (Exception e) {
-            UnityEngine.Debug.LogError("Failed to start FaceTracking.py:\n" + e);
-        }
+        Debug.Log("🎧 Listening for mocap data on port " + port);
     }
 
     void ReceiveLoop() {
@@ -67,9 +51,14 @@ public class UDPExpressionReceiver : MonoBehaviour {
 
                 ExpressionData parsed = JsonUtility.FromJson<ExpressionData>(json);
 
-                if (parsed != null && !string.IsNullOrEmpty(parsed.expression)) {
+                if (parsed != null && int.TryParse(parsed.expression, out int exprIndex)) {
+                    // Assuming UDP sends 1,2,3 → map to 0-based index
+                    expression = exprIndex - 1;
+
+                    // Update UI on main thread
                     UnityMainThreadDispatcher.Instance().Enqueue(() => {
-                        textUI.text = parsed.expression;
+                        if (expression >= 0 && expression < playerFaces.Length)
+                            textUI.text = playerFaces[expression];
                     });
                 }
             } catch (SocketException) { }
@@ -81,10 +70,5 @@ public class UDPExpressionReceiver : MonoBehaviour {
         udpClient.Close();
         if (receiveThread != null && receiveThread.IsAlive)
             receiveThread.Abort();
-    }
-
-    [Serializable]
-    private class ExpressionData {
-        public string expression;
     }
 }
