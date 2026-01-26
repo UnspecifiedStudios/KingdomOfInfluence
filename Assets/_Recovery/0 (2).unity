@@ -403,8 +403,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
-  m_fontSizeBase: 40
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -790,11 +790,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UDPExpressionReceiver
   port: 5005
   textUI: {fileID: 1675132077}
-  playerFaces:
-  - "(\u02F6\u1D54 \u1D55 \u1D54\u02F6)"
-  - ( O _ O ))
-  - "(\u2565.\u2565)"
-  expression: -1
 --- !u!4 &1279950608
 Transform:
   m_ObjectHideFlags: 0
@@ -825,7 +820,6 @@ MonoBehaviour:
   textUI: {fileID: 637350931}
   startButton: {fileID: 14577787}
   changeFace: {fileID: 1037303755}
-  expresionReceiver: {fileID: 1279950607}
 --- !u!1 &1516000028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1028,8 +1022,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
-  m_fontSizeBase: 40
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
