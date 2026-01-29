@@ -9,11 +9,15 @@ public class PlayerCombat : MonoBehaviour
     public float heavyAttackDuration = 2f;
     public float shieldDuration = 3.5f;
     public float beamAttackDuration = 3f;
+    public int currentCameraIndex = 0;
+    public int cameraListSize = 2;
     public GameObject lightAttackHitbox;
     public GameObject heavyAttackHitbox;
     public GameObject shieldHitbox;
     public GameObject beamAttackHitbox;
+    public Transform[] cameraTransformsList;
 
+    PlayerMovement playerMovementComponent;
     private bool isLightAttacking = false;
     private bool isHeavyAttacking = false;
     private bool isBeamAttacking = false;
@@ -25,7 +29,38 @@ public class PlayerCombat : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        //Stub for now; may need to do something here later
+        //Get the PlayerMovement component/script that is also attached to this PlayerCapsule gameObject
+        playerMovementComponent = gameObject.GetComponentInParent<PlayerMovement>();
+
+        //Setting current camera to the regular main camera at startt attached to th
+        currentCameraIndex = 0;
+        
+        //Setting the main camera as active, and ensure that lock on camera is not active at the start
+        cameraTransformsList[currentCameraIndex].gameObject.SetActive(true);
+        cameraTransformsList[currentCameraIndex + 1].gameObject.SetActive(false);
+        playerMovementComponent.cameraTransform = cameraTransformsList[currentCameraIndex];
+    }
+
+    /* Read user input to check if they pressed the camera toggle input via
+     * InputAction bindings - "CameraToggle"
+    */
+    public void OnCameraToggle(InputAction.CallbackContext context)
+    {
+        //Check if the button was pressed
+        if(context.performed)
+        {
+            //Deactivate the current camera
+            cameraTransformsList[currentCameraIndex].gameObject.SetActive(false);
+
+            //Cycle the camera index (for now, its just cycling between 0 and 1)
+            currentCameraIndex = (currentCameraIndex + 1) % cameraListSize;
+
+            //Activate the new current camera with the new camera index
+            cameraTransformsList[currentCameraIndex].gameObject.SetActive(true);
+
+            //Set the PlayerMovement component's cameraTransform to the new camera
+            playerMovementComponent.cameraTransform = cameraTransformsList[currentCameraIndex];
+        }
     }
 
     /* Read user input to check if they are pressing light attack button via
