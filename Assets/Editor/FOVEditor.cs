@@ -1,14 +1,14 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(EnemyNav))]
+[CustomEditor(typeof(EnemyScript))]
 
 public class FOVEditor : Editor
 {
     
     private void OnSceneGUI()
     {
-        EnemyNav fov = (EnemyNav)target;
+        EnemyScript fov = (EnemyScript)target;
         Handles.color = Color.white;
         Handles.DrawWireArc(fov.transform.position, Vector3.up, Vector3.forward, 360, fov.fovRadius);
 

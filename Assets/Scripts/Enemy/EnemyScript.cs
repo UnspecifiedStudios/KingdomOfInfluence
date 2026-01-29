@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,7 +12,7 @@ public enum EnemyType
     Passive
 }
 
-public class EnemyNav : MonoBehaviour
+public class EnemyScript : MonoBehaviour
 {
     // inspector values
     [Header("Enemy FOV Settings")]
@@ -33,6 +35,9 @@ public class EnemyNav : MonoBehaviour
     [Tooltip("The transform destination for the NavAgent to move to (Player's Capsule)")]
     public Transform targetDestination;
 
+    [Tooltip("The transform destination for the NavAgent to move to (Player's Capsule)")]
+    public float enemySpeed = 4f;
+
     [Tooltip("A radius that exists around the target the NavAgent navigates to")]
     public float radiusToReach = 5f; 
 
@@ -49,11 +54,20 @@ public class EnemyNav : MonoBehaviour
     public float maxHealth = 100;
     public float currentHealth = 100;
 
+    [Header ("Enemy Battle Data")]
+    [Min(0)]
+    public float timeBetweenAttacks = 1.5f;
+    [Min(0)]
+    public float intermittentAttackWait = 0.45f;
+    public GameObject[] attackGameObjects;
+
     // private values
     private NavMeshAgent agent;
     private float innerRadius;
     private float outerRadius;
     private bool currentlyNavigating = false;
+    private bool attackOffCooldown = true;
+    private List<EnemyAttackBase> attackScripts = new List<EnemyAttackBase>();
 
     void Awake()
     {
@@ -67,6 +81,11 @@ public class EnemyNav : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         // turn off steering rotation, allow manual rotation
         agent.updateRotation = false;
+        agent.speed = enemySpeed;
+        foreach (GameObject obj in attackGameObjects)
+        {
+            attackScripts.Add(obj.GetComponent<EnemyAttackBase>());
+        }
         StartCoroutine(FOVRoutine());
     }
 
@@ -117,6 +136,14 @@ public class EnemyNav : MonoBehaviour
 
             agent.stoppingDistance = 0.1f;
             agent.SetDestination(retreatPosition);
+        }
+        // enemy is just right
+        else
+        {
+            if (attackOffCooldown)
+            {
+                StartCoroutine(AttackPlayer());    
+            }
         }
         
         StartCoroutine(PlayerNavRecalculate(navDestRefreshTime));
@@ -189,5 +216,24 @@ public class EnemyNav : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(rotateDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 5f * Time.deltaTime);
         }
+    }
+
+    IEnumerator AttackPlayer()
+    {
+        attackOffCooldown = false;
+        // attack player
+        if (attackScripts.Count != 0)
+        {
+            // TODO: probably want to wait until this attack is done....
+            StartCoroutine(attackScripts[Random.Range(0, attackScripts.Count)].AttackFunction());    
+        }
+        
+        // wait cooldown time
+            // calculate intermittent time between attacks
+        float randomWeightTime = timeBetweenAttacks + Random.Range(-intermittentAttackWait, intermittentAttackWait);
+        yield return new WaitForSeconds(randomWeightTime);
+
+        // turn off bool to allow attacking again
+        attackOffCooldown = true;
     }
 }
