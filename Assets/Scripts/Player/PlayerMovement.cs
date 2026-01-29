@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     private float verticalVelocity;
     private PlayerStats playerStats;
     private Quaternion rotationDirection;
+    private bool hasJumped = false;
 
     private void Awake()
     {
@@ -57,7 +58,8 @@ public class PlayerMovement : MonoBehaviour
             isHoldingSpace = true;
         }
         else if (context.canceled)
-        {
+        {   
+            JumpReleasedPlayer();
             isHoldingSpace = false;
         }
     }
@@ -107,13 +109,8 @@ public class PlayerMovement : MonoBehaviour
 
         while (elapsed < dodgeDuration)
         {
-            // apply gravity 
-            if (controller.isGrounded && verticalVelocity < 0f)
-            {
-                // set to 0 if on floor
-                verticalVelocity = 0f;
-            }
-            verticalVelocity += gravity * Time.deltaTime;
+            // get gravity
+            verticalVelocity = GetGravityVector();
 
             // apply direction
             Vector3 movement = dodgeDirection * dodgeSpeed + Vector3.up * verticalVelocity;
@@ -158,20 +155,17 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // apply gravity 
-        if (controller.isGrounded && verticalVelocity < 0f)
-        {
-            // set to 0 if on floor
-            verticalVelocity = 0f;
-        }
-        verticalVelocity += gravity * Time.deltaTime;
-        movement.y = verticalVelocity;   // apply direction
+        movement.y = GetGravityVector();
 
-        // if controller is on ground and user pressed space
-        if (isHoldingSpace && controller.isGrounded)
+        // if controller is on ground and user pressed space (and seperate bool check for no doubledipping)
+        if (isHoldingSpace && controller.isGrounded && !hasJumped)
         {
             // make them jump
-            verticalVelocity = jumpForce;
-            playerStats.Health.Damage(20f);
+            if (playerStats.Stamina.TryConsume(20f))
+            {
+                verticalVelocity = jumpForce;
+                hasJumped = true;
+            }
         }
 
         // move the player
@@ -190,4 +184,45 @@ public class PlayerMovement : MonoBehaviour
             transform.rotation = Quaternion.RotateTowards(transform.rotation, rotationDirection, rotationSpeed * Time.deltaTime);
         }
     }
+
+    public float GetGravityVector()
+    {
+        if (controller.isGrounded && verticalVelocity < 0f)
+        {
+            // set to 0 if on floor
+            verticalVelocity = 0f;
+            hasJumped = false;
+        }
+        
+        // if the velocity is negative
+        if (verticalVelocity + gravity * Time.deltaTime < 0f)
+        {
+            // apply direction * 2
+            verticalVelocity += gravity * Time.deltaTime * 2f;
+        }
+        else
+        {
+            // apply direction
+            verticalVelocity += gravity * Time.deltaTime;
+        }
+         
+        return verticalVelocity;
+    }
+
+    public void JumpReleasedPlayer()
+    {
+        if (!controller.isGrounded && verticalVelocity > 0f)
+        {
+            // TOMAYBE: Wanted to not let the player release too early into the jump, 
+            //          but also wanted to still let them cancel it after a certain point (9/10 jumpForce).
+            //          Code was decently complicated so it wasn't implemented, but maybe in the future?
+            //          Use an else{} statement to Implement 
+            if (verticalVelocity < 9*jumpForce/10)
+            {
+                verticalVelocity = 0f;    
+            }
+            
+        }
+    }
+
 }
