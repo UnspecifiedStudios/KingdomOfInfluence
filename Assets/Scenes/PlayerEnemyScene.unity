@@ -265,6 +265,11 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 42cf55d8fbf2f1349b6a7d09d472a5e0, type: 2}
   m_BuildHeightMesh: 0
+--- !u!1 &683628870 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2101998054130375429, guid: 67e563c99fe64ef4a8341ed36156be25, type: 3}
+  m_PrefabInstance: {fileID: 6397565490229114776}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &872829774
 GameObject:
   m_ObjectHideFlags: 0
@@ -633,6 +638,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 4295218660526821043, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
+      propertyPath: currentLockOnTarget
+      value: 
+      objectReference: {fileID: 683628870}
     - target: {fileID: 5375827163334387708, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.31
@@ -671,6 +680,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5375827163334387708, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5639732933921025976, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6094801954825330478, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
