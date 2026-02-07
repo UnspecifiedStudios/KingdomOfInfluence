@@ -8,9 +8,10 @@ public class RandomFaceScript : MonoBehaviour {
     public TMP_Text textUI;
     public Button startButton;
     public Button changeFace;
+    public GameObject altButtons;
     public UDPExpressionReceiver expresionReceiver;
 
-    bool correctFace = false;
+    public bool correctFace = false;
     int currIndex;
 
     public enum NPCFace {
@@ -20,6 +21,7 @@ public class RandomFaceScript : MonoBehaviour {
     };
 
     void Start() {
+        altButtons.SetActive(true);
         startButton.onClick.AddListener(StartFaceMission);
         //changeFace.onClick.AddListener(ChangeEmotion);
     }
