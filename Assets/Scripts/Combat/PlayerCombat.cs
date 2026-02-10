@@ -274,7 +274,7 @@ public class PlayerCombat : MonoBehaviour
         //if player inputs light attack and no attack is currently active, then perform light attack action
         if(isLightAttacking && !attackCurrentlyActive) 
         {
-            if (playerStats.Stamina.TryConsume(atkStaminaCosts.lightAttackCost));
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.lightAttackCost))
             {
                 LightAttackAction();
             }
@@ -283,7 +283,7 @@ public class PlayerCombat : MonoBehaviour
         //if player inputs heavy no attack is currently active, then perform heavy attack action
         if (isHeavyAttacking && !attackCurrentlyActive)
         {
-            if (playerStats.Stamina.TryConsume(atkStaminaCosts.heavyAttackCost));
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.heavyAttackCost))
             {
                 HeavyAttackAction();
             }
@@ -292,7 +292,7 @@ public class PlayerCombat : MonoBehaviour
         //if player inputs shield button and shield is currently not active, then perform shield action
         if (isShielding && !shieldCurrentlyActive)
         {
-            if (playerStats.Stamina.TryConsume(atkStaminaCosts.shieldCost));
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.shieldCost))
             {
                 ShieldAction();
             }
@@ -301,7 +301,7 @@ public class PlayerCombat : MonoBehaviour
         //if player inputs beam button and beam is currently not active, then perform beam action
         if(isBeamAttacking && !attackCurrentlyActive)
         {
-            if (playerStats.Stamina.TryConsume(atkStaminaCosts.beamAttackcost));
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.beamAttackcost))
             {
                 BeamAttackAction();
             }
