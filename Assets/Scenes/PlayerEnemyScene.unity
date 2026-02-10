@@ -516,6 +516,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 4383858658841724593, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
+      propertyPath: atkStaminaCosts.shieldCost
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4383858658841724593, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
+      propertyPath: atkStaminaCosts.beamAttackcost
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4383858658841724593, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
+      propertyPath: atkStaminaCosts.heavyAttackCost
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4383858658841724593, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
+      propertyPath: atkStaminaCosts.lightAttackCost
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5375827163334387708, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.9385
