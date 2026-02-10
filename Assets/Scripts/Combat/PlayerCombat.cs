@@ -9,7 +9,18 @@ public class AttackStaminaCosts
     public float lightAttackCost;
     public float heavyAttackCost;
     public float shieldCost;
-    public float beamAttackcost;
+    public float beamAttackCost;
+    public float beamAttackCostOT;
+}
+
+[Serializable]
+public class AttackDamageVals
+{
+    public float lightAttackDmg;
+    public float heavyAttackDmg;
+
+    public float beamAttackDmg;
+    public float beamAttackDmgOT;
 }
 
 public class PlayerCombat : MonoBehaviour
@@ -26,6 +37,7 @@ public class PlayerCombat : MonoBehaviour
     public GameObject beamAttackHitbox;
     public Transform[] cameraTransformsList;
     [SerializeField] public AttackStaminaCosts atkStaminaCosts;
+    [SerializeField] public AttackDamageVals atkDmgVals;
     
 
     PlayerMovement playerMovementComponent;
@@ -301,7 +313,7 @@ public class PlayerCombat : MonoBehaviour
         //if player inputs beam button and beam is currently not active, then perform beam action
         if(isBeamAttacking && !attackCurrentlyActive)
         {
-            if (playerStats.Stamina.TryConsume(atkStaminaCosts.beamAttackcost))
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.beamAttackCost))
             {
                 BeamAttackAction();
             }
