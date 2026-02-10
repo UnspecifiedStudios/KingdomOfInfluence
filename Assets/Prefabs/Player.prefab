@@ -1417,7 +1417,7 @@ GameObject:
   - component: {fileID: 3545447538522471309}
   m_Layer: 0
   m_Name: Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1430,13 +1430,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4851629659255272083}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0.0019603104, y: -0.00029491892, z: -0.00006350888, w: 0.99999803}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5375827163334387708}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -0.225, y: -0.034, z: -0.007}
 --- !u!20 &4274108079353560884
 Camera:
   m_ObjectHideFlags: 0
@@ -1562,13 +1562,14 @@ GameObject:
   - component: {fileID: 8741382534961451876}
   - component: {fileID: 5956567926082347839}
   - component: {fileID: 3953196232508265419}
+  - component: {fileID: 1850171794188724169}
   m_Layer: 0
   m_Name: LockOnCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7811079235723767047
 Transform:
   m_ObjectHideFlags: 0
@@ -1687,6 +1688,25 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &1850171794188724169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5639732933921025976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da177247202a6ae46a3ad4279ef86bbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraTargeting
+  searchRadius: 20
+  focusNarrowness: 0.7
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  bestTarget: {fileID: 0}
+  freeLockCamera: {fileID: 9209721683143809299}
 --- !u!1 &5804074234472031569
 GameObject:
   m_ObjectHideFlags: 0
@@ -1969,7 +1989,7 @@ MonoBehaviour:
   cameraTransform: {fileID: 9209721683143809299}
   dodgeStaminaCost: 30
   runStaminaCost: 3.5
-  rotationSpeed: 500
+  rotationSpeed: 750
 --- !u!114 &4383858658841724593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1992,7 +2012,9 @@ MonoBehaviour:
   heavyAttackHitbox: {fileID: 3982609500367630134}
   shieldHitbox: {fileID: 7012954181281422274}
   beamAttackHitbox: {fileID: 8371172852507313}
-  cameraTransformsList: []
+  cameraTransformsList:
+  - {fileID: 9209721683143809299}
+  - {fileID: 7811079235723767047}
 --- !u!114 &7433679925553234730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2222,6 +2244,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: e04bd484-93b9-43e4-a535-5e5a28b2cd6d
     m_ActionName: 'Player/Quest[/Keyboard/j]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4383858658841724593}
+        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
+        m_MethodName: OnCameraToggle
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: d4a2309a-3d2d-4313-959c-aadbec07dc49
+    m_ActionName: Player/CameraToggle
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
