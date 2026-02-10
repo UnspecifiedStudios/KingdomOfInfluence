@@ -1704,8 +1704,7 @@ MonoBehaviour:
   focusNarrowness: 0.7
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 64
-  bestTarget: {fileID: 0}
+    m_Bits: 512
   freeLockCamera: {fileID: 9209721683143809299}
 --- !u!1 &5804074234472031569
 GameObject:
@@ -1837,7 +1836,7 @@ GameObject:
   - component: {fileID: 4902726162678113138}
   - component: {fileID: 4383858658841724593}
   - component: {fileID: 7433679925553234730}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlayerCapsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
