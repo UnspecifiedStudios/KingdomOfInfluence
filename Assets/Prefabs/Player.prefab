@@ -1989,6 +1989,7 @@ MonoBehaviour:
   dodgeStaminaCost: 30
   runStaminaCost: 3.5
   rotationSpeed: 750
+  jumpStaminaCost: 20
 --- !u!114 &4383858658841724593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2014,6 +2015,17 @@ MonoBehaviour:
   cameraTransformsList:
   - {fileID: 9209721683143809299}
   - {fileID: 7811079235723767047}
+  atkStaminaCosts:
+    lightAttackCost: 3
+    heavyAttackCost: 6
+    shieldCost: 4
+    beamAttackCost: 20
+    beamAttackCostOT: 2
+  atkDmgVals:
+    lightAttackDmg: 5
+    heavyAttackDmg: 10
+    beamAttackDmg: 20
+    beamAttackDmgOT: 2
 --- !u!114 &7433679925553234730
 MonoBehaviour:
   m_ObjectHideFlags: 0
