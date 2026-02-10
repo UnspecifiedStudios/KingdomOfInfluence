@@ -27,7 +27,7 @@ public class PlayerCombat : MonoBehaviour
     
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         //Get the PlayerMovement component/script that is also attached to this PlayerCapsule gameObject
         playerMovementComponent = gameObject.GetComponentInParent<PlayerMovement>();

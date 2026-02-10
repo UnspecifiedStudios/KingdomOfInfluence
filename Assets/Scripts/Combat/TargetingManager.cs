@@ -18,19 +18,20 @@ public class CameraTargeting : MonoBehaviour
     [Header("Current Result")]
     public Transform bestTarget;
 
-    // Update is called once per frame
-    void Update()
-    {
-        //we can change this later i just used tab to swap between enemies
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            bestTarget = GetBestTargetInView();
+    public Transform freeLockCamera;
 
-            if (bestTarget != null)
-                Debug.Log($"Target Found: {bestTarget.name}");
-            else
-                Debug.Log("No valid target in view.");
-        }
+    LockOnCameraPivotManager lockOnCameraManagerComponent;
+
+    private void Awake()
+    {
+        //Get the lockOnCameraPivotManager component from the paren pivot object
+        lockOnCameraManagerComponent = transform.parent.GetComponent<LockOnCameraPivotManager>();
+    }
+
+    private void OnEnable()
+    {
+        //Capture the best canidate in view and give it to the lockOnCamera manager
+        lockOnCameraManagerComponent.currentLockOnTarget = GetBestTargetInView();
     }
 
     public Transform GetBestTargetInView()
@@ -46,11 +47,11 @@ public class CameraTargeting : MonoBehaviour
         foreach (Collider collider in potentialTargets)
         {
             //calculate direction from Camera to Enemy
-            Vector3 directionToEnemy = (collider.transform.position - Camera.main.transform.position).normalized;
+            Vector3 directionToEnemy = (collider.transform.position - freeLockCamera.position).normalized;
 
             //Focus Check (Dot Product)
             //aligned the Camera's forward direction is with the Enemy
-            float alignmentScore = Vector3.Dot(Camera.main.transform.forward, directionToEnemy);
+            float alignmentScore = Vector3.Dot(freeLockCamera.forward, directionToEnemy);
 
             //If target in focus
             if (alignmentScore > focusNarrowness)
@@ -75,7 +76,7 @@ public class CameraTargeting : MonoBehaviour
     {
         //making sure we can see them
         RaycastHit hit;
-        Vector3 start = Camera.main.transform.position;
+        Vector3 start = freeLockCamera.position;
         Vector3 dir = (target.position - start).normalized;
 
         //if we can see it and its in our range
