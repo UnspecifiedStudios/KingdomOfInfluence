@@ -9,10 +9,13 @@ public class OrbitCamera : MonoBehaviour
     public float minY = -20f;
     public float maxY = 80f;
     public float verticalOffset = 1f;
+    public GameObject lockOnCameraPosition;
 
     private float yaw;
     private float pitch;
     private Vector2 lookInput;
+
+    [HideInInspector] public bool currentlyLockingOn = false;
 
     private void Awake()
     {
@@ -25,18 +28,27 @@ public class OrbitCamera : MonoBehaviour
 
     private void LateUpdate()
     {
-        yaw += lookInput.x * sensitivity;
-        pitch -= lookInput.y * sensitivity;
-        pitch = Mathf.Clamp(pitch, minY, maxY);
+        if (currentlyLockingOn)
+        {
+            transform.position = lockOnCameraPosition.transform.position;
+            transform.rotation = lockOnCameraPosition.transform.rotation;
+        }
+        else
+        {
+            yaw += lookInput.x * sensitivity;
+            pitch -= lookInput.y * sensitivity;
+            pitch = Mathf.Clamp(pitch, minY, maxY);
 
-        Quaternion rotation = Quaternion.Euler(pitch, yaw, 0);
+            Quaternion rotation = Quaternion.Euler(pitch, yaw, 0);
 
-        Vector3 offset = rotation * new Vector3(0, 0, -distance);
+            Vector3 offset = rotation * new Vector3(0, 0, -distance);
 
-        Vector3 targetPosition = player.position + Vector3.up * verticalOffset;
-        transform.position = targetPosition + offset;
+            Vector3 targetPosition = player.position + Vector3.up * verticalOffset;
+            transform.position = targetPosition + offset;
 
-        transform.LookAt(targetPosition);
+            transform.LookAt(targetPosition);
+        }
+        
     }
 
     // Update is called once per frame
