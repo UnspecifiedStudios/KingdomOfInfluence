@@ -68,12 +68,15 @@ public class EnemyScript : MonoBehaviour
     private bool currentlyNavigating = false;
     private bool attackOffCooldown = true;
     private List<EnemyAttackBase> attackScripts = new List<EnemyAttackBase>();
+    private EnemyHealthBar healthBar;
 
     void Awake()
     {
         // calculate radii tolerances
         innerRadius = radiusToReach - innerRadTolerance;
         outerRadius = radiusToReach + outerRadTolerance;
+        // get instance of healthbar
+        healthBar = GetComponentInChildren<EnemyHealthBar>();
     }
     
     void Start()
@@ -87,6 +90,8 @@ public class EnemyScript : MonoBehaviour
             attackScripts.Add(obj.GetComponent<EnemyAttackBase>());
         }
         StartCoroutine(FOVRoutine());
+
+        healthBar.UpdateHealthBar(currentHealth, maxHealth);
     }
 
     void Update()
@@ -236,4 +241,46 @@ public class EnemyScript : MonoBehaviour
         // turn off bool to allow attacking again
         attackOffCooldown = true;
     }
+
+    public void TakeDamage(float damageAmount)
+    {
+        currentHealth -= damageAmount;
+        healthBar.UpdateHealthBar(currentHealth, maxHealth);
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    public void Die()
+    {
+        Destroy(gameObject);
+    }
+
+    void OnTriggerEnter(Collider collisionInfo)
+    {
+        // is a hitbox?
+        if (collisionInfo.gameObject.transform.parent.name == "PlayerCapsule")
+        {
+            PlayerCombat combatVals = collisionInfo.gameObject.transform.parent.GetComponent<PlayerCombat>();
+            switch (collisionInfo.gameObject.name)
+            {
+                case "LightAttackHitbox":
+                    TakeDamage(combatVals.atkDmgVals.lightAttackDmg);
+                    break;
+                case "HeavyAttackHitbox":
+                    TakeDamage(combatVals.atkDmgVals.heavyAttackDmg);
+                    break;
+                case "BeamAttackHitbox":
+                    TakeDamage(combatVals.atkDmgVals.beamAttackDmg);
+                    break;
+                default:
+                    // error, did not find correct box
+                    break;
+            }
+        }
+    }
+
+
+
 }

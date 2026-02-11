@@ -15,9 +15,6 @@ public class CameraTargeting : MonoBehaviour
     //set to enemyLayer later for enemies
     public LayerMask enemyLayer;        
 
-    [Header("Current Result")]
-    public Transform bestTarget;
-
     public Transform freeLockCamera;
 
     LockOnCameraPivotManager lockOnCameraManagerComponent;

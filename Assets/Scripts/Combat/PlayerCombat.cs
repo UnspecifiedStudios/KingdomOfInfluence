@@ -1,7 +1,27 @@
 using System.Collections;
-using System.Diagnostics.Contracts;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
+[Serializable]
+public class AttackStaminaCosts
+{
+    public float lightAttackCost;
+    public float heavyAttackCost;
+    public float shieldCost;
+    public float beamAttackCost;
+    public float beamAttackCostOT;
+}
+
+[Serializable]
+public class AttackDamageVals
+{
+    public float lightAttackDmg;
+    public float heavyAttackDmg;
+
+    public float beamAttackDmg;
+    public float beamAttackDmgOT;
+}
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -16,6 +36,9 @@ public class PlayerCombat : MonoBehaviour
     public GameObject shieldHitbox;
     public GameObject beamAttackHitbox;
     public Transform[] cameraTransformsList;
+    [SerializeField] public AttackStaminaCosts atkStaminaCosts;
+    [SerializeField] public AttackDamageVals atkDmgVals;
+    
 
     PlayerMovement playerMovementComponent;
     private bool isLightAttacking = false;
@@ -24,6 +47,7 @@ public class PlayerCombat : MonoBehaviour
     private bool isShielding = false;
     private bool attackCurrentlyActive = false;
     private bool shieldCurrentlyActive = false;
+    private PlayerStats playerStats;
     
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -39,6 +63,11 @@ public class PlayerCombat : MonoBehaviour
         cameraTransformsList[currentCameraIndex].gameObject.SetActive(true);
         cameraTransformsList[currentCameraIndex + 1].gameObject.SetActive(false);
         playerMovementComponent.cameraTransform = cameraTransformsList[currentCameraIndex];
+    }
+
+    void Start()
+    {
+        playerStats = transform.parent.Find("Stats").GetComponent<PlayerStats>();
     }
 
     /* Read user input to check if they pressed the camera toggle input via
@@ -257,25 +286,37 @@ public class PlayerCombat : MonoBehaviour
         //if player inputs light attack and no attack is currently active, then perform light attack action
         if(isLightAttacking && !attackCurrentlyActive) 
         {
-            LightAttackAction();
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.lightAttackCost))
+            {
+                LightAttackAction();
+            }
         }
 
         //if player inputs heavy no attack is currently active, then perform heavy attack action
         if (isHeavyAttacking && !attackCurrentlyActive)
         {
-            HeavyAttackAction();
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.heavyAttackCost))
+            {
+                HeavyAttackAction();
+            }
         }
 
         //if player inputs shield button and shield is currently not active, then perform shield action
         if (isShielding && !shieldCurrentlyActive)
         {
-            ShieldAction();
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.shieldCost))
+            {
+                ShieldAction();
+            }
         }
 
         //if player inputs beam button and beam is currently not active, then perform beam action
         if(isBeamAttacking && !attackCurrentlyActive)
         {
-            BeamAttackAction();
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.beamAttackCost))
+            {
+                BeamAttackAction();
+            }
         }
     }
 }

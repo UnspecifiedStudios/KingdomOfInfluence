@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     public float dodgeStaminaCost = 20f;
     public float runStaminaCost = 2f;
     public float rotationSpeed = 500f;
+    public float jumpStaminaCost = 20f;
 
     CharacterController controller;
     private Vector2 moveInput;
@@ -161,7 +162,7 @@ public class PlayerMovement : MonoBehaviour
         if (isHoldingSpace && controller.isGrounded && !hasJumped)
         {
             // make them jump
-            if (playerStats.Stamina.TryConsume(20f))
+            if (playerStats.Stamina.TryConsume(jumpStaminaCost))
             {
                 verticalVelocity = jumpForce;
                 hasJumped = true;
