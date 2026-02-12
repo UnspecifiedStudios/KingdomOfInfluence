@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     public float runStaminaCost = 2f;
     public float rotationSpeed = 500f;
     public float jumpStaminaCost = 20f;
+    public GameObject playerAnimatorObject;
 
     CharacterController controller;
     private Vector2 moveInput;
@@ -32,11 +33,13 @@ public class PlayerMovement : MonoBehaviour
     private PlayerStats playerStats;
     private Quaternion rotationDirection;
     private bool hasJumped = false;
+    private Animator playerAnimator;
 
     private void Awake()
     {
         runStaminaCost *= 10; // make it 10x as potent
         controller = GetComponent<CharacterController>();
+        playerAnimator = playerAnimatorObject.GetComponent<Animator>();
     }
 
     /*
