@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-public class CameraTargeting : MonoBehaviour
+public class TargetingManager : MonoBehaviour
 {
     [Header("Detection Settings")]
 
@@ -25,9 +25,8 @@ public class CameraTargeting : MonoBehaviour
         lockOnCameraManagerComponent = transform.parent.GetComponent<LockOnCameraPivotManager>();
     }
 
-    private void OnEnable()
+    public void EnableLockOn()
     {
-        //Capture the best canidate in view and give it to the lockOnCamera manager
         lockOnCameraManagerComponent.currentLockOnTarget = GetBestTargetInView();
     }
 

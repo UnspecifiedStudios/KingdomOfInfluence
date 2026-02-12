@@ -384,7 +384,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7811079235723767047}
+  - {fileID: 1837258546154016219}
   m_Father: {fileID: 5375827163334387708}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4295218660526821043
@@ -400,7 +400,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LockOnCameraPivotManager
   playerTransform: {fileID: 688104740417387415}
-  lockOnCameraTransform: {fileID: 7811079235723767047}
+  lockOnCameraTransform: {fileID: 1837258546154016219}
   currentLockOnTarget: {fileID: 0}
   offsetFromPlayer: {x: 0, y: 2, z: -3}
 --- !u!1 &1944282777383448137
@@ -728,6 +728,56 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!1 &2397834994946491779
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1837258546154016219}
+  - component: {fileID: 5426656652308769486}
+  m_Layer: 0
+  m_Name: LockOnCameraLocation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1837258546154016219
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397834994946491779}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -26.00676, y: 1.4983699, z: 3.7599}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8263038779917191771}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5426656652308769486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397834994946491779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da177247202a6ae46a3ad4279ef86bbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraTargeting
+  searchRadius: 20
+  focusNarrowness: 0.7
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  freeLockCamera: {fileID: 9209721683143809299}
 --- !u!1 &3075911170100335393
 GameObject:
   m_ObjectHideFlags: 0
@@ -949,7 +999,7 @@ GameObject:
   - component: {fileID: 5375827163334387708}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1550,162 +1600,9 @@ MonoBehaviour:
   minY: -20
   maxY: 80
   verticalOffset: 1
---- !u!1 &5639732933921025976
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7811079235723767047}
-  - component: {fileID: 8741382534961451876}
-  - component: {fileID: 5956567926082347839}
-  - component: {fileID: 3953196232508265419}
-  - component: {fileID: 1850171794188724169}
-  m_Layer: 0
-  m_Name: LockOnCamera
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &7811079235723767047
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5639732933921025976}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -25.50959, y: 1.81, z: 4.25681}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8263038779917191771}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!20 &8741382534961451876
-Camera:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5639732933921025976}
-  m_Enabled: 1
-  serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
-  m_projectionMatrixMode: 1
-  m_GateFitMode: 2
-  m_FOVAxisMode: 0
-  m_Iso: 200
-  m_ShutterSpeed: 0.005
-  m_Aperture: 16
-  m_FocusDistance: 10
-  m_FocalLength: 50
-  m_BladeCount: 5
-  m_Curvature: {x: 2, y: 11}
-  m_BarrelClipping: 0.25
-  m_Anamorphism: 0
-  m_SensorSize: {x: 36, y: 24}
-  m_LensShift: {x: 0, y: 0}
-  m_NormalizedViewPortRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 60
-  orthographic: 0
-  orthographic size: 5
-  m_Depth: 0
-  m_CullingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_RenderingPath: -1
-  m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 0
-  m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 1
-  m_AllowDynamicResolution: 0
-  m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
-  m_StereoConvergence: 10
-  m_StereoSeparation: 0.022
---- !u!81 &5956567926082347839
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5639732933921025976}
-  m_Enabled: 1
---- !u!114 &3953196232508265419
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5639732933921025976}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
-  m_RenderShadows: 1
-  m_RequiresDepthTextureOption: 2
-  m_RequiresOpaqueTextureOption: 2
-  m_CameraType: 0
-  m_Cameras: []
-  m_RendererIndex: -1
-  m_VolumeLayerMask:
-    serializedVersion: 2
-    m_Bits: 1
-  m_VolumeTrigger: {fileID: 0}
-  m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
-  m_Antialiasing: 0
-  m_AntialiasingQuality: 2
-  m_StopNaN: 0
-  m_Dithering: 0
-  m_ClearDepth: 1
-  m_AllowXRRendering: 1
-  m_AllowHDROutput: 1
-  m_UseScreenCoordOverride: 0
-  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
-  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
-  m_RequiresDepthTexture: 0
-  m_RequiresColorTexture: 0
-  m_TaaSettings:
-    m_Quality: 3
-    m_FrameInfluence: 0.1
-    m_JitterScale: 1
-    m_MipBias: 0
-    m_VarianceClampScale: 0.9
-    m_ContrastAdaptiveSharpening: 0
-  m_Version: 2
---- !u!114 &1850171794188724169
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5639732933921025976}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da177247202a6ae46a3ad4279ef86bbd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CameraTargeting
-  searchRadius: 20
-  focusNarrowness: 0.7
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 512
-  freeLockCamera: {fileID: 9209721683143809299}
+  lockOnCameraPosition: {fileID: 2397834994946491779}
+  currentlyLockingOn: 0
+  transitionDuration: 0.4
 --- !u!1 &5804074234472031569
 GameObject:
   m_ObjectHideFlags: 0
@@ -1836,9 +1733,13 @@ GameObject:
   - component: {fileID: 4902726162678113138}
   - component: {fileID: 4383858658841724593}
   - component: {fileID: 7433679925553234730}
+  - component: {fileID: 23244057755284789}
+  - component: {fileID: 2826836422089078230}
+  - component: {fileID: 4370115355002409918}
+  - component: {fileID: 155860470352646163}
   m_Layer: 6
   m_Name: PlayerCapsule
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1989,6 +1890,7 @@ MonoBehaviour:
   dodgeStaminaCost: 30
   runStaminaCost: 3.5
   rotationSpeed: 750
+  jumpStaminaCost: 20
 --- !u!114 &4383858658841724593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2005,15 +1907,25 @@ MonoBehaviour:
   heavyAttackDuration: 2
   shieldDuration: 3.5
   beamAttackDuration: 3
-  currentCameraIndex: 0
-  cameraListSize: 2
   lightAttackHitbox: {fileID: 5804074234472031569}
   heavyAttackHitbox: {fileID: 3982609500367630134}
   shieldHitbox: {fileID: 7012954181281422274}
   beamAttackHitbox: {fileID: 8371172852507313}
-  cameraTransformsList:
-  - {fileID: 9209721683143809299}
-  - {fileID: 7811079235723767047}
+  playerObjRefs:
+    cameraReference: {fileID: 4851629659255272083}
+    statsObject: {fileID: 3295296543131189545}
+    lockOnCamPosObject: {fileID: 2397834994946491779}
+  atkStaminaCosts:
+    lightAttackCost: 3
+    heavyAttackCost: 6
+    shieldCost: 4
+    beamAttackCost: 20
+    beamAttackCostOT: 2
+  atkDmgVals:
+    lightAttackDmg: 5
+    heavyAttackDmg: 10
+    beamAttackDmg: 20
+    beamAttackDmgOT: 2
 --- !u!114 &7433679925553234730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2088,7 +2000,19 @@ MonoBehaviour:
     m_ActionId: 6c2ab1b8-8984-453a-af3d-a3c78ae1679a
     m_ActionName: 'Player/Attack[/Mouse/leftButton,/Keyboard/enter]'
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 23244057755284789}
+        m_TargetAssemblyTypeName: InteractManager, Assembly-CSharp
+        m_MethodName: OnInteract
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 852140f2-7766-474d-8707-702459ba45f3
     m_ActionName: 'Player/Interact[/Keyboard/e]'
   - m_PersistentCalls:
@@ -2193,9 +2117,9 @@ MonoBehaviour:
     m_ActionName: 'Player/BeamAttack[/Mouse/middleButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4383858658841724593}
-        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
-        m_MethodName: OnHeavyAttack
+      - m_Target: {fileID: 4370115355002409918}
+        m_TargetAssemblyTypeName: QuestManager, Assembly-CSharp
+        m_MethodName: OnQuest
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2205,65 +2129,76 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_ActionId: 1c96a1ee-b54e-492f-9856-94055aab5131
-    m_ActionName: Player/HeavyAttack
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4383858658841724593}
-        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
-        m_MethodName: OnBeamAttack
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: d40ef82c-ab81-44e0-ac81-3991df901482
-    m_ActionName: Player/BeamAttack
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4383858658841724593}
-        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
-        m_MethodName: OnShield
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 74667527-0654-4a1c-92e6-5f409f43fbd3
-    m_ActionName: Player/Shield
-  - m_PersistentCalls:
-      m_Calls: []
     m_ActionId: e04bd484-93b9-43e4-a535-5e5a28b2cd6d
     m_ActionName: 'Player/Quest[/Keyboard/j]'
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4383858658841724593}
-        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
-        m_MethodName: OnCameraToggle
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
+    m_ActionId: 74667527-0654-4a1c-92e6-5f409f43fbd3
+    m_ActionName: 'Player/Shield[/Keyboard/q]'
+  - m_PersistentCalls:
+      m_Calls: []
     m_ActionId: d4a2309a-3d2d-4313-959c-aadbec07dc49
-    m_ActionName: Player/CameraToggle
+    m_ActionName: 'Player/CameraToggle[/Keyboard/tab]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &23244057755284789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6094801954825330478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7234f071efa5214b897fa66b03c51f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+--- !u!114 &2826836422089078230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6094801954825330478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b51517b5c1583cc42b4743cb292dfdb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  questManager: {fileID: 4370115355002409918}
+  reputationManager: {fileID: 155860470352646163}
+  dialogueCanvas: {fileID: 0}
+  dialogueText: {fileID: 0}
+--- !u!114 &4370115355002409918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6094801954825330478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb64693aaca2757478b98200245a857e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  questUI: {fileID: 0}
+  questList: {fileID: 0}
+  questItemPrefab: {fileID: 7714025988171755595, guid: 85b5f39bdfceb6c4b88275f80b7d2127, type: 3}
+--- !u!114 &155860470352646163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6094801954825330478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69155efd405619542b0a0d0d88114fbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &6325929351190867568
 GameObject:
   m_ObjectHideFlags: 0

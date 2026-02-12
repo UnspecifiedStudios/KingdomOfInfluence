@@ -9,7 +9,26 @@ public class AttackStaminaCosts
     public float lightAttackCost;
     public float heavyAttackCost;
     public float shieldCost;
-    public float beamAttackcost;
+    public float beamAttackCost;
+    public float beamAttackCostOT;
+}
+
+[Serializable]
+public class AttackDamageVals
+{
+    public float lightAttackDmg;
+    public float heavyAttackDmg;
+
+    public float beamAttackDmg;
+    public float beamAttackDmgOT;
+}
+
+[Serializable]
+public class PlayerObjRefs
+{
+    public GameObject cameraReference;
+    public GameObject statsObject;
+    public GameObject lockOnCamPosObject;
 }
 
 public class PlayerCombat : MonoBehaviour
@@ -18,14 +37,13 @@ public class PlayerCombat : MonoBehaviour
     public float heavyAttackDuration = 2f;
     public float shieldDuration = 3.5f;
     public float beamAttackDuration = 3f;
-    public int currentCameraIndex = 0;
-    public int cameraListSize = 2;
     public GameObject lightAttackHitbox;
     public GameObject heavyAttackHitbox;
     public GameObject shieldHitbox;
     public GameObject beamAttackHitbox;
-    public Transform[] cameraTransformsList;
+    [SerializeField] public PlayerObjRefs playerObjRefs;
     [SerializeField] public AttackStaminaCosts atkStaminaCosts;
+    [SerializeField] public AttackDamageVals atkDmgVals;
     
 
     PlayerMovement playerMovementComponent;
@@ -35,27 +53,22 @@ public class PlayerCombat : MonoBehaviour
     private bool isShielding = false;
     private bool attackCurrentlyActive = false;
     private bool shieldCurrentlyActive = false;
+    
+    private OrbitCamera orbCamBehavior;
     private PlayerStats playerStats;
+    private TargetingManager targetingMngr;
+    private bool isLockedOn = false;
     
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         //Get the PlayerMovement component/script that is also attached to this PlayerCapsule gameObject
+        // Get references/components to every object used in script
         playerMovementComponent = gameObject.GetComponentInParent<PlayerMovement>();
-
-        //Setting current camera to the regular main camera at startt attached to th
-        currentCameraIndex = 0;
-        
-        //Setting the main camera as active, and ensure that lock on camera is not active at the start
-        cameraTransformsList[currentCameraIndex].gameObject.SetActive(true);
-        cameraTransformsList[currentCameraIndex + 1].gameObject.SetActive(false);
-        playerMovementComponent.cameraTransform = cameraTransformsList[currentCameraIndex];
-    }
-
-    void Start()
-    {
-        playerStats = transform.parent.Find("Stats").GetComponent<PlayerStats>();
+        orbCamBehavior = playerObjRefs.cameraReference.GetComponent<OrbitCamera>();
+        playerStats = playerObjRefs.statsObject.GetComponent<PlayerStats>();
+        targetingMngr = playerObjRefs.lockOnCamPosObject.GetComponent<TargetingManager>();
     }
 
     /* Read user input to check if they pressed the camera toggle input via
@@ -65,18 +78,17 @@ public class PlayerCombat : MonoBehaviour
     {
         //Check if the button was pressed
         if(context.performed)
-        {
-            //Deactivate the current camera
-            cameraTransformsList[currentCameraIndex].gameObject.SetActive(false);
+        {   
+            // toggle bool
+            isLockedOn = !isLockedOn;
+            // set bool in orbit camera
+            orbCamBehavior.currentlyLockingOn = isLockedOn;
 
-            //Cycle the camera index (for now, its just cycling between 0 and 1)
-            currentCameraIndex = (currentCameraIndex + 1) % cameraListSize;
-
-            //Activate the new current camera with the new camera index
-            cameraTransformsList[currentCameraIndex].gameObject.SetActive(true);
-
-            //Set the PlayerMovement component's cameraTransform to the new camera
-            playerMovementComponent.cameraTransform = cameraTransformsList[currentCameraIndex];
+            if (isLockedOn)
+            {
+                // tell lockon manager to re-calculate best target
+                targetingMngr.EnableLockOn();
+            }
         }
     }
 
@@ -274,7 +286,7 @@ public class PlayerCombat : MonoBehaviour
         //if player inputs light attack and no attack is currently active, then perform light attack action
         if(isLightAttacking && !attackCurrentlyActive) 
         {
-            if (playerStats.Stamina.TryConsume(atkStaminaCosts.lightAttackCost));
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.lightAttackCost))
             {
                 LightAttackAction();
             }
@@ -283,7 +295,7 @@ public class PlayerCombat : MonoBehaviour
         //if player inputs heavy no attack is currently active, then perform heavy attack action
         if (isHeavyAttacking && !attackCurrentlyActive)
         {
-            if (playerStats.Stamina.TryConsume(atkStaminaCosts.heavyAttackCost));
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.heavyAttackCost))
             {
                 HeavyAttackAction();
             }
@@ -292,7 +304,7 @@ public class PlayerCombat : MonoBehaviour
         //if player inputs shield button and shield is currently not active, then perform shield action
         if (isShielding && !shieldCurrentlyActive)
         {
-            if (playerStats.Stamina.TryConsume(atkStaminaCosts.shieldCost));
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.shieldCost))
             {
                 ShieldAction();
             }
@@ -301,7 +313,7 @@ public class PlayerCombat : MonoBehaviour
         //if player inputs beam button and beam is currently not active, then perform beam action
         if(isBeamAttacking && !attackCurrentlyActive)
         {
-            if (playerStats.Stamina.TryConsume(atkStaminaCosts.beamAttackcost));
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.beamAttackCost))
             {
                 BeamAttackAction();
             }

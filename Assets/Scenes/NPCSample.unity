@@ -933,66 +933,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1 &402118879 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6094801954825330478, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-  m_PrefabInstance: {fileID: 1246174892}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &402118887
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 402118879}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7234f071efa5214b897fa66b03c51f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
---- !u!114 &402118895
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 402118879}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b51517b5c1583cc42b4743cb292dfdb2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  questManager: {fileID: 402118903}
-  reputationManager: {fileID: 402118904}
-  dialogueCanvas: {fileID: 1920304079}
-  dialogueText: {fileID: 1853405334}
---- !u!114 &402118903
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 402118879}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb64693aaca2757478b98200245a857e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  questUI: {fileID: 345970395}
-  questList: {fileID: 1490223963}
-  questItemPrefab: {fileID: 7714025988171755595, guid: 85b5f39bdfceb6c4b88275f80b7d2127, type: 3}
---- !u!114 &402118904
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 402118879}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69155efd405619542b0a0d0d88114fbe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!1 &479418842
 GameObject:
   m_ObjectHideFlags: 0
@@ -1779,14 +1719,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2826836422089078230, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
+      propertyPath: dialogueText
+      value: 
+      objectReference: {fileID: 1853405334}
+    - target: {fileID: 2826836422089078230, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
+      propertyPath: dialogueCanvas
+      value: 
+      objectReference: {fileID: 1920304079}
     - target: {fileID: 3665752434305664901, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 3665752434305664901, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_TagString
-      value: Player
-      objectReference: {fileID: 0}
+    - target: {fileID: 4370115355002409918, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
+      propertyPath: questUI
+      value: 
+      objectReference: {fileID: 345970395}
+    - target: {fileID: 4370115355002409918, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
+      propertyPath: questList
+      value: 
+      objectReference: {fileID: 1490223963}
     - target: {fileID: 5375827163334387708, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1827,94 +1779,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6094801954825330478, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_TagString
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.size
-      value: 21
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_ActionId
-      value: e04bd484-93b9-43e4-a535-5e5a28b2cd6d
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_ActionName
-      value: 'Player/Quest[/Keyboard/j]'
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 402118887}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 402118903}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnInteract
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnQuest
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: InteractManager, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: QuestManager, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433679925553234730, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6094801954825330478, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 402118887}
-    - targetCorrespondingSourceObject: {fileID: 6094801954825330478, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 402118895}
-    - targetCorrespondingSourceObject: {fileID: 6094801954825330478, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 402118903}
-    - targetCorrespondingSourceObject: {fileID: 6094801954825330478, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 402118904}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
 --- !u!1 &1334796335
 GameObject:
