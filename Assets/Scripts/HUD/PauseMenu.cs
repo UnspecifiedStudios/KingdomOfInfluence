@@ -1,53 +1,91 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
-
-public class PauseMenu : MonoBehaviour
-{
+public class PauseMenu : MonoBehaviour {
     public static bool GameIsPaused = false;
+    public Button quitButton;
 
     public GameObject pauseMenuUI;
+    public CanvasGroup canvasGroup;
+    public float timeToFade = 1f;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
-            if (GameIsPaused)
-            {
-                Resume();
+    private bool fadeIn = false;
+    private bool fadeOut = false;
+
+    private PlayerInput playerInput;
+    private InputAction pauseAction;
+
+    private void Awake() {
+        playerInput = GetComponent<PlayerInput>();
+        pauseAction = playerInput.actions["PauseGame"];
+    }
+
+    private void OnEnable() {
+        pauseAction.performed += OnPauseGame;
+    }
+
+    private void OnDisable() {
+        pauseAction.performed -= OnPauseGame;
+    }
+
+    private void Start() {
+        canvasGroup.alpha = 0;
+        pauseMenuUI.SetActive(false);
+    }
+
+    private void Update() {
+        // fading in the canvas (pause)
+        if (fadeIn) {
+            canvasGroup.alpha += timeToFade * Time.unscaledDeltaTime;
+
+            if (canvasGroup.alpha >= 1f) {
+                canvasGroup.alpha = 1f;
+                fadeIn = false;
+                quitButton.onClick.AddListener(QuitGame);
             }
-            else
-            {
-                Pause();
+        }
+        // fading in the canvas (resume)
+        if (fadeOut) {
+            canvasGroup.alpha -= timeToFade * Time.unscaledDeltaTime;
+
+            if (canvasGroup.alpha <= 0f) {
+                canvasGroup.alpha = 0f;
+                fadeOut = false;
+                pauseMenuUI.SetActive(false);
             }
         }
     }
 
-    public void Resume()
-    {
-        pauseMenuUI.SetActive(false);
+    // trigger pause input
+    private void OnPauseGame(InputAction.CallbackContext context) {
+        Debug.Log("Pause triggered");
+
+        // check if the game is paused or not
+        if (GameIsPaused & !fadeIn & !fadeOut)
+            Resume();
+        else if (!fadeIn & !fadeOut)
+            Pause();
+    }
+
+    // resume game
+    public void Resume() {
+        fadeOut = true;
         Time.timeScale = 1f;
         GameIsPaused = false;
     }
 
-    public void Pause()
-    {
+    // show pause canvas
+    public void Pause() {
         pauseMenuUI.SetActive(true);
+        fadeIn = true;
         Time.timeScale = 0f;
         GameIsPaused = true;
     }
 
-    public void LoadMenu()
-    {
-        Debug.Log("Loading menu..");
-    }
-
-    public void QuitGame()
-    {
+    // quit application. idk if works
+    public void QuitGame() {
         Debug.Log("Quitting Game");
-
-        //Works in actual game just not in the editor
         Application.Quit();
     }
 }
