@@ -152,9 +152,11 @@ public class PlayerMovement : MonoBehaviour
         if (isHoldingRun && playerStats.Stamina.TryConsume(runStaminaCost * Time.deltaTime))
         {
             movement *= defaultSpeed * sprintSpeedMult;
+            playerAnimator.SetBool("isRunning", true);
         }
         else
         {
+            playerAnimator.SetBool("isRunning", false);
             movement *= defaultSpeed;
         }
 
@@ -167,6 +169,7 @@ public class PlayerMovement : MonoBehaviour
             // make them jump
             if (playerStats.Stamina.TryConsume(jumpStaminaCost))
             {
+                playerAnimator.SetBool("isJumping", true);
                 verticalVelocity = jumpForce;
                 hasJumped = true;
             }
@@ -177,7 +180,10 @@ public class PlayerMovement : MonoBehaviour
 
         // check if player is moving in any x or z direction
         if(movement.x != 0 && movement.z != 0)
-        {
+        {   
+            // set animation
+            playerAnimator.SetBool("isWalking", true);
+
             // instantiate new vector thats copied from movement, but with y-axis/gravity zeroed out
             Vector3 movementWithoutGrav = new Vector3(movement.x, 0, movement.z);
 
@@ -187,12 +193,17 @@ public class PlayerMovement : MonoBehaviour
             // rotate the player's transform
             transform.rotation = Quaternion.RotateTowards(transform.rotation, rotationDirection, rotationSpeed * Time.deltaTime);
         }
+        else
+        {
+            playerAnimator.SetBool("isWalking", false);
+        }
     }
 
     public float GetGravityVector()
     {
         if (controller.isGrounded && verticalVelocity < 0f)
         {
+            playerAnimator.SetBool("isJumping", false);
             // set to 0 if on floor
             verticalVelocity = 0f;
             hasJumped = false;
@@ -206,7 +217,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            // apply direction
+            // apply direction * 1
             verticalVelocity += gravity * Time.deltaTime;
         }
          
