@@ -178,6 +178,7 @@ public class PlayerMovement : MonoBehaviour
         // move the player
         controller.Move(movement * Time.deltaTime);
 
+        // handle rotation
         // check if player is moving in any x or z direction
         if(movement.x != 0 && movement.z != 0)
         {   
@@ -204,8 +205,8 @@ public class PlayerMovement : MonoBehaviour
         if (controller.isGrounded && verticalVelocity < 0f)
         {
             playerAnimator.SetBool("isJumping", false);
-            // set to 0 if on floor
-            verticalVelocity = 0f;
+            // set to -3 if on floor
+            verticalVelocity = -3f; // -3f is applied to reduce/eliminate slope bouncing
             hasJumped = false;
         }
         
