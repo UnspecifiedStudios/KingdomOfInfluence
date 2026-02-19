@@ -180,6 +180,7 @@ public class PlayerMovement : MonoBehaviour
 
         // handle rotation
         // check if player is moving in any x or z direction
+        //  TODO: prolly gonna have to come back here to lock players movment rotation for attack rotation
         if(movement.x != 0 && movement.z != 0)
         {   
             // set animation

@@ -1,9 +1,10 @@
-using System.Collections;
+using NUnit.Framework;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using NUnit.Framework;
-using System.Collections.Generic;
+using static UnityEngine.GridBrushBase;
 
 [Serializable]
 public class AttackStaminaCosts
@@ -304,6 +305,9 @@ public class PlayerCombat : MonoBehaviour
 
     private void BeamAttackAction()
     {
+        //THIS WORKS so far; need to lock all player rotation when this happens, along with making it only rotate on the x-axis
+        Quaternion rotationDirection = Quaternion.LookRotation(playerMovementComponent.cameraTransform.forward, Vector3.up);
+        transform.rotation = rotationDirection;
         StartCoroutine(BeamAttackCoroutine());
     }
 
