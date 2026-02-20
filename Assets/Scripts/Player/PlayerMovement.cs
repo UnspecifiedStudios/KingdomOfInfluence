@@ -55,9 +55,17 @@ public class PlayerMovement : MonoBehaviour
     private Animator playerAnimator;
     private int runStaminaCostMult = 10;
 
+    /* TODO: Need to have discussion on dependencies between our scripts.
+     *       What we have now, however, is perfectly. But down the line,
+     *       as we build more on top of the system, we want to make sure to avoid
+     *       high coupling.
+     */
+    private PlayerCombat playerCombatComponent;
+
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+        playerCombatComponent = GetComponent<PlayerCombat>();
         playerAnimator = playerAnimatorObject.GetComponent<Animator>();
     }
 
@@ -150,8 +158,8 @@ public class PlayerMovement : MonoBehaviour
     // FixedUpdate (main movement)
     void Update()
     {
-        // only do if not dodging
-        if (isDodging) return;
+        // only do if not dodging OR currently attacking
+        if (isDodging || playerCombatComponent.attackCurrentlyActive) return;
 
         // calculate camera-relative directions
         Vector3 forward = cameraTransform.forward;
@@ -199,7 +207,6 @@ public class PlayerMovement : MonoBehaviour
 
         // handle rotation
         // check if player is moving in any x or z direction
-        //  TODO: prolly gonna have to come back here to lock players movment rotation for attack rotation
         if(movement.x != 0 && movement.z != 0)
         {   
             // set animation
