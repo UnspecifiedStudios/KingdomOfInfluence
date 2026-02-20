@@ -1,9 +1,10 @@
-using System.Collections;
+using NUnit.Framework;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using NUnit.Framework;
-using System.Collections.Generic;
+using static UnityEngine.GridBrushBase;
 
 [Serializable]
 public class AttackStaminaCosts
@@ -40,9 +41,10 @@ public class PlayerCombat : MonoBehaviour
     public float shieldDuration = 3.5f;
     public float beamAttackDuration = 3f;
     public float comboResetTime = 1.5f;
+    public bool attackCurrentlyActive = false;
     public List<MeleeWeaponAttackScriptableObject> LightAttackStrings;
     public List<MeleeWeaponAttackScriptableObject> HeavyAttackStrings;
-    /* Major Notes:
+    /* TODO - Major Notes:
      * - Planning on reworking the current attack/combat system
      * - Want to move away from simple light/heavy attack values ON the player itself
      * - Instead, have every weapon carry its own damage, duration, animation values and unique list of combo strings
@@ -64,9 +66,8 @@ public class PlayerCombat : MonoBehaviour
     private bool isHeavyAttacking = false;
     private bool isBeamAttacking = false;
     private bool isShielding = false;
-    private bool attackCurrentlyActive = false;
     private bool shieldCurrentlyActive = false;
-    
+
     private OrbitCamera orbCamBehavior;
     private PlayerStats playerStats;
     private TargetingManager targetingMngr;
@@ -204,6 +205,9 @@ public class PlayerCombat : MonoBehaviour
         attackCurrentlyActive = true;
         lightAttackHitbox.SetActive(true);
 
+        //rotate the player in the direction of the camera
+        RotatePlayerToCameraDirection();
+
         //TODO: play animation at the current combo attack at the current index in the light attack list
         Debug.Log(currentLightAttack.debugMsg);
 
@@ -250,6 +254,9 @@ public class PlayerCombat : MonoBehaviour
         //set currently attacking to true, and activate heavy attack hitbox
         attackCurrentlyActive = true;
         heavyAttackHitbox.SetActive(true);
+
+        //rotate the player in the direction of the camera
+        RotatePlayerToCameraDirection();
 
         //TODO: play animation at the current combo attack at the current index in the heavy attack list
         Debug.Log(currentHeavyAttack.debugMsg);
@@ -316,6 +323,9 @@ public class PlayerCombat : MonoBehaviour
         attackCurrentlyActive = true;
         beamAttackHitbox.SetActive(true);
 
+        //rotate the player in the direction of the camera
+        RotatePlayerToCameraDirection();
+
         //while elapsed time is less than beam duration
         while (timeElapsed < beamAttackDuration)
         {
@@ -329,6 +339,21 @@ public class PlayerCombat : MonoBehaviour
         //set currently attacking to false, and deactivate beam hitbox
         attackCurrentlyActive = false;
         beamAttackHitbox.SetActive(false);
+    }
+
+    /* TOMAYBE: May want to change this to a Quaternion return instead; and make this function simply only
+     *          get the current direction of the camera on the (x,z) plane. This then could be used
+     *          anywhere else down the line where we need the camera's direction on the (x,z) plane.
+     */
+    private void RotatePlayerToCameraDirection()
+    {
+        //initialize variables
+        Vector3 cameraPlaneDirection = new Vector3(playerObjRefs.cameraReference.transform.forward.x, 0,
+                                              playerObjRefs.cameraReference.transform.forward.z);
+
+        //calculate rotation direction from camera plane direction, then apply rotation to player transform
+        Quaternion rotationDirection = Quaternion.LookRotation(cameraPlaneDirection, Vector3.up);
+        transform.rotation = rotationDirection;
     }
 
     // Update is called once per frame
