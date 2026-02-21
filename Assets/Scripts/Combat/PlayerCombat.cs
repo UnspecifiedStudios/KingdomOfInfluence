@@ -72,7 +72,10 @@ public class PlayerCombat : MonoBehaviour
     private PlayerStats playerStats;
     private TargetingManager targetingMngr;
     private bool isLockedOn = false;
-    
+    [Header("I-Frames")]
+    [SerializeField] private float hitIFrameSeconds = 0.35f;
+    public bool IsInvulnerable { get; private set; }
+    private Coroutine iFrameRoutine;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -355,7 +358,24 @@ public class PlayerCombat : MonoBehaviour
         Quaternion rotationDirection = Quaternion.LookRotation(cameraPlaneDirection, Vector3.up);
         transform.rotation = rotationDirection;
     }
+    // Trigger I-Frames for the player
+    public void TriggerIFrames(float seconds = -1f)
+    {
+        if (seconds <= 0f) seconds = hitIFrameSeconds;
 
+        if (iFrameRoutine != null)
+            StopCoroutine(iFrameRoutine);
+
+        iFrameRoutine = StartCoroutine(IFrameCoroutine(seconds));
+    }
+    // Coroutine to handle I-Frames duration
+    private IEnumerator IFrameCoroutine(float seconds)
+    {
+        IsInvulnerable = true;
+        yield return new WaitForSeconds(seconds);
+        IsInvulnerable = false;
+        iFrameRoutine = null;
+    }
     // Update is called once per frame
     void Update()
     {

@@ -24,12 +24,14 @@ public class Health : MonoBehaviour
     //private vars
     private float healthBarPosition;
     private float positionDifference;
+    private PlayerCombat playerCombat;
 
     private void Awake()
     {
         CurrentHealth = maxHealth;
         IsDead = false;
-        
+
+        playerCombat = GetComponent<PlayerCombat>();
     }
 
     private void Start()
@@ -49,7 +51,12 @@ public class Health : MonoBehaviour
     {
         if (IsDead) return;
 
+        if (playerCombat != null && playerCombat.IsInvulnerable) return; // ADD
+
         CurrentHealth = Mathf.Clamp(CurrentHealth - amount, 0f, maxHealth);
+
+        if (playerCombat != null && amount > 0f)
+            playerCombat.TriggerIFrames(); // ADD
 
         if (CurrentHealth <= 0f)
         {
