@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class PauseMenu : MonoBehaviour {
     public static bool GameIsPaused = false;
     public Button quitButton;
+    public PlayerMovement playerMoveScript;
 
     public GameObject pauseMenuUI;
     public CanvasGroup canvasGroup;
@@ -13,20 +14,15 @@ public class PauseMenu : MonoBehaviour {
     private bool fadeIn = false;
     private bool fadeOut = false;
 
-    private PlayerInput playerInput;
-    private InputAction pauseAction;
+    public PlayerInput playerInput;
 
-    private void Awake() {
-        playerInput = GetComponent<PlayerInput>();
-        pauseAction = playerInput.actions["PauseGame"];
-    }
 
     private void OnEnable() {
-        pauseAction.performed += OnPauseGame;
+        playerInput.onActionTriggered += HandleAction;
     }
 
     private void OnDisable() {
-        pauseAction.performed -= OnPauseGame;
+        playerInput.onActionTriggered -= HandleAction;
     }
 
     private void Start() {
@@ -35,6 +31,7 @@ public class PauseMenu : MonoBehaviour {
     }
 
     private void Update() {
+        Debug.Log(playerInput.currentActionMap.name);
         // fading in the canvas (pause)
         if (fadeIn) {
             canvasGroup.alpha += timeToFade * Time.unscaledDeltaTime;
@@ -58,29 +55,42 @@ public class PauseMenu : MonoBehaviour {
     }
 
     // trigger pause input
-    private void OnPauseGame(InputAction.CallbackContext context) {
-        Debug.Log("Pause triggered");
+    private void HandleAction(InputAction.CallbackContext context) {
+        // check that theres a pause game
+        if (context.action.name != "PauseGame") return;
+        // make sure the action was onbly preformed once
+        if (!context.performed) return;
 
-        // check if the game is paused or not
-        if (GameIsPaused & !fadeIn & !fadeOut)
+        // check if it is still in animation
+        if (fadeIn || fadeOut) return;
+
+        // pause or resume game
+        if (GameIsPaused)
             Resume();
-        else if (!fadeIn & !fadeOut)
+        else
             Pause();
     }
 
     // resume game
     public void Resume() {
         fadeOut = true;
+        // globasl time is normal 
         Time.timeScale = 1f;
         GameIsPaused = false;
+        playerInput.SwitchCurrentActionMap("Player");
+        playerInput.actions["PauseGame"].Enable();
+
     }
 
     // show pause canvas
     public void Pause() {
         pauseMenuUI.SetActive(true);
         fadeIn = true;
+        // global time is stopped (all updates stop)
         Time.timeScale = 0f;
         GameIsPaused = true;
+        playerInput.SwitchCurrentActionMap("UI");
+        playerInput.actions["PauseGame"].Enable();
     }
 
     // quit application. idk if works
