@@ -1213,9 +1213,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenu
   quitButton: {fileID: 2099357263}
+  playerMoveScript: {fileID: 0}
   pauseMenuUI: {fileID: 1477002725}
   canvasGroup: {fileID: 1477002730}
   timeToFade: 1
+  playerInput: {fileID: 1279950611}
 --- !u!114 &1279950611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1243,7 +1245,7 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: UI
+  m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &1376139275
