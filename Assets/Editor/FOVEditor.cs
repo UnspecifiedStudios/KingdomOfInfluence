@@ -44,6 +44,12 @@ public class FOVEditor : Editor
             Handles.color = Color.green;
             Handles.DrawLine(fov.transform.position, fov.targetDestination.position);
         }
+
+        if (fov.isBoss)
+        {
+            Handles.color = Color.white;
+            Handles.DrawWireArc(fov.transform.position, Vector3.up, Vector3.forward, 360, fov.bossBarActivationRadius);
+        }
     }
 
     private Vector3 DirectionFromAngle(float eulerY, float angleInDegrees)

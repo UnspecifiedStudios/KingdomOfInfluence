@@ -54,6 +54,11 @@ public class EnemyScript : MonoBehaviour
     public float maxHealth = 100;
     public float currentHealth = 100;
 
+    [Header("Boss Stats")]
+    public bool isBoss = false;
+    public Canvas bossCanvas;
+    public float bossBarActivationRadius = 20f;
+
     [Header ("Enemy Battle Data")]
     [Min(0)]
     public float timeBetweenAttacks = 1.5f;
@@ -77,6 +82,7 @@ public class EnemyScript : MonoBehaviour
         outerRadius = radiusToReach + outerRadTolerance;
         // get instance of healthbar
         healthBar = GetComponentInChildren<EnemyHealthBar>();
+    
     }
     
     void Start()
@@ -118,7 +124,10 @@ public class EnemyScript : MonoBehaviour
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 5f * Time.deltaTime);
             }
         }
-           
+        if (isBoss)
+        {
+            BossBarActivationCheck();
+        }
     }
 
     public void NavToPlayerRadius()
@@ -187,10 +196,12 @@ public class EnemyScript : MonoBehaviour
         {
             Transform target = rangeChecks[0].transform;
             Vector3 directionToTarget = (target.position - transform.position).normalized;
-
+            
+            // if player is in FOV angles
             if (Vector3.Angle(transform.forward, directionToTarget) < fovAngle / 2)
             {
                 float distanceToTarget = Vector3.Distance(transform.position, target.position);
+                // if player isn't obstructed by obstacles
                 if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstructionMask))
                 {
                     canSeePlayer = true;
@@ -208,6 +219,19 @@ public class EnemyScript : MonoBehaviour
         else if (canSeePlayer)
         {
             canSeePlayer = false;
+        }
+    }
+
+    private void BossBarActivationCheck()
+    {
+        Collider[] rangeChecks = Physics.OverlapSphere(transform.position, bossBarActivationRadius, targetMask);
+        if (rangeChecks.Length != 0)
+        {
+            bossCanvas.enabled = true;
+        }
+        else
+        {
+            bossCanvas.enabled = false;
         }
     }
 

@@ -222,11 +222,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1476216014}
+  m_Father: {fileID: 647226828}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 620, y: 420}
   m_SizeDelta: {x: 680, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &78116848
@@ -515,7 +515,7 @@ GameObject:
   - component: {fileID: 647226830}
   - component: {fileID: 647226829}
   m_Layer: 5
-  m_Name: Boss-Canvas
+  m_Name: FrogBoss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -533,8 +533,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1476216014}
-  m_Father: {fileID: 117765566}
+  - {fileID: 1818150448}
+  - {fileID: 915609099}
+  - {fileID: 78116847}
+  - {fileID: 698249527}
+  m_Father: {fileID: 1579234304}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -634,11 +637,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1476216014}
+  m_Father: {fileID: 647226828}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 620, y: 420}
   m_SizeDelta: {x: 680, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &698249528
@@ -838,11 +841,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 997809358}
-  m_Father: {fileID: 1476216014}
+  m_Father: {fileID: 647226828}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 620, y: 420}
   m_SizeDelta: {x: 680, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &915609100
@@ -1157,7 +1160,7 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5375827163334387708, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 647226828}
+      addedObject: {fileID: 1579234304}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
 --- !u!1 &1461471220
@@ -1272,7 +1275,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1476216013
+--- !u!20 &1572432996 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 4274108079353560884, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
+  m_PrefabInstance: {fileID: 1418217229}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1579234303
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1280,42 +1288,34 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1476216014}
+  - component: {fileID: 1579234304}
   m_Layer: 5
-  m_Name: FrogBoss
+  m_Name: Boss-Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &1476216014
+--- !u!224 &1579234304
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1476216013}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 1579234303}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 18.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1818150448}
-  - {fileID: 915609099}
-  - {fileID: 78116847}
-  - {fileID: 698249527}
-  m_Father: {fileID: 647226828}
+  - {fileID: 647226828}
+  m_Father: {fileID: 117765566}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 620, y: 420}
-  m_SizeDelta: {x: 1920, y: 1080}
+  m_AnchoredPosition: {x: 961.9385, y: 537.65}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!20 &1572432996 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 4274108079353560884, guid: 292d08e6a7dcc2649ae5f800f045c328, type: 3}
-  m_PrefabInstance: {fileID: 1418217229}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1748908260
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1327,6 +1327,10 @@ PrefabInstance:
     - target: {fileID: 2101998054130375429, guid: 67e563c99fe64ef4a8341ed36156be25, type: 3}
       propertyPath: m_Name
       value: FrogBoss
+      objectReference: {fileID: 0}
+    - target: {fileID: 2447271992461895777, guid: 67e563c99fe64ef4a8341ed36156be25, type: 3}
+      propertyPath: isBoss
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2447271992461895777, guid: 67e563c99fe64ef4a8341ed36156be25, type: 3}
       propertyPath: fovAngle
@@ -1356,6 +1360,10 @@ PrefabInstance:
       propertyPath: targetDestination
       value: 
       objectReference: {fileID: 1763645206}
+    - target: {fileID: 2447271992461895777, guid: 67e563c99fe64ef4a8341ed36156be25, type: 3}
+      propertyPath: bossBarActivationRadius
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 2535223035264294256, guid: 67e563c99fe64ef4a8341ed36156be25, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -1475,11 +1483,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1476216014}
+  m_Father: {fileID: 647226828}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 620, y: 420}
   m_SizeDelta: {x: 680, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1818150449
