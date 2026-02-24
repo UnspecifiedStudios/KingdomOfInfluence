@@ -1493,6 +1493,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Stamina
   maxStamina: 100
   regenRate: 15
+  exhaustedRegenMultiplier: 0.7
+  exhaustedRegenDelay: 3
   staminaBar: {fileID: 3285910938293485486}
   barEmptyXPosition: -288
   barFullXPosition: 0
@@ -3080,17 +3082,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb7e92d0cb975fc4f9662178010e7cfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  defaultSpeed: 5
-  sprintSpeedMult: 1.5
-  gravity: -9.81
-  jumpForce: 6
-  dodgeDistance: 5
-  dodgeDuration: 0.5
+  moveSettings:
+    defaultSpeed: 5
+    sprintSpeedMult: 1.5
+    gravity: -9.81
+    rotationSpeed: 750
+  ablSettings:
+    jumpForce: 6
+    jumpStaminaCost: 20
+    dodgeDistance: 5
+    dodgeDuration: 0.5
+    dodgeStaminaCost: 30
+    runStaminaCost: 2
   cameraTransform: {fileID: 9209721683143809299}
-  dodgeStaminaCost: 30
-  runStaminaCost: 3.5
-  rotationSpeed: 750
-  jumpStaminaCost: 20
   playerAnimatorObject: {fileID: 3220700019980954077}
 --- !u!114 &4383858658841724593
 MonoBehaviour:
@@ -3108,6 +3112,16 @@ MonoBehaviour:
   heavyAttackDuration: 2
   shieldDuration: 3.5
   beamAttackDuration: 3
+  comboResetTime: 1.5
+  attackCurrentlyActive: 0
+  LightAttackStrings:
+  - {fileID: 11400000, guid: f83ba9b888b71c945894cb1de472305c, type: 2}
+  - {fileID: 11400000, guid: 025ac94b9cf549140bf9224d03a4a508, type: 2}
+  - {fileID: 11400000, guid: 3925b30e169a2a64c9e9f883c36a1f8f, type: 2}
+  HeavyAttackStrings:
+  - {fileID: 11400000, guid: da312334e680ea14794e5042dd4aef4a, type: 2}
+  - {fileID: 11400000, guid: f8b77cbcf8e96f94586a83fd8e20a864, type: 2}
+  - {fileID: 11400000, guid: da5e2d675d2f7714885d46d560d0571b, type: 2}
   lightAttackHitbox: {fileID: 5804074234472031569}
   heavyAttackHitbox: {fileID: 3982609500367630134}
   shieldHitbox: {fileID: 7012954181281422274}
