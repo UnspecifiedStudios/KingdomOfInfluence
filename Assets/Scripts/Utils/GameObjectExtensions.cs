@@ -32,4 +32,19 @@ public static class GameObjectExtensions
         }
         return null;
     }
+
+    public static GameObject FindChildBySubstringName(this GameObject obj, string nameToFind)
+    {
+        Transform[] allChildrenTransforms = obj.GetComponentsInChildren<Transform>();
+
+        foreach (Transform childTransform in allChildrenTransforms)
+        {   
+            // if the obj is the name we're looking for and it's not the object that called it
+            if (childTransform.gameObject.name.Contains(nameToFind))
+            {
+                return childTransform.gameObject;
+            }
+        }
+        return null;
+    }
 }

@@ -58,6 +58,8 @@ public class EnemyScript : MonoBehaviour
     public bool isBoss = false;
     public Canvas bossCanvas;
     public float bossBarActivationRadius = 20f;
+    public float bossBarEmptyXPos = 493f;
+    public float bossBarFullXPos = 0f;
 
     [Header ("Enemy Battle Data")]
     [Min(0)]
@@ -74,6 +76,7 @@ public class EnemyScript : MonoBehaviour
     private bool attackOffCooldown = true;
     private List<EnemyAttackBase> attackScripts = new List<EnemyAttackBase>();
     private EnemyHealthBar healthBar;
+    private GameObject bossBarSpriteGameObject;
 
     void Awake()
     {
@@ -82,7 +85,14 @@ public class EnemyScript : MonoBehaviour
         outerRadius = radiusToReach + outerRadTolerance;
         // get instance of healthbar
         healthBar = GetComponentInChildren<EnemyHealthBar>();
-    
+
+        if (isBoss)
+        {
+            // get instance of bossbar
+                // ex. FrogBoss -> "fb-mask" -> fb-bar-front
+            bossBarSpriteGameObject = bossCanvas.gameObject.FindChildBySubstringName("-mask").transform.GetChild(0).gameObject;
+            Debug.Log(bossBarSpriteGameObject);
+        }
     }
     
     void Start()
@@ -127,6 +137,7 @@ public class EnemyScript : MonoBehaviour
         if (isBoss)
         {
             BossBarActivationCheck();
+            CustomSliderBarUtils.UpdateBarPosition(bossBarSpriteGameObject, currentHealth, maxHealth, bossBarEmptyXPos, bossBarFullXPos);
         }
     }
 
@@ -279,6 +290,10 @@ public class EnemyScript : MonoBehaviour
     public void Die()
     {
         Destroy(gameObject);
+        if (isBoss)
+        {
+            bossCanvas.enabled = false;
+        }
     }
 
     void OnTriggerEnter(Collider collisionInfo)
