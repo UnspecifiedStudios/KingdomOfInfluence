@@ -302,6 +302,7 @@ public class EnemyScript : MonoBehaviour
         if (collisionInfo.gameObject.transform.parent.name == "PlayerCapsule")
         {
             PlayerCombat combatVals = collisionInfo.gameObject.transform.parent.GetComponent<PlayerCombat>();
+            // TODO: Given the attack heirarchy re-organization, comparing Hitbox names might not be optimal anymore. 
             switch (collisionInfo.gameObject.name)
             {
                 case "LightAttackHitbox":
