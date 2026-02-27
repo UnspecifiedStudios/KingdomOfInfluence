@@ -305,10 +305,10 @@ public class EnemyScript : MonoBehaviour
             switch (collisionInfo.gameObject.name)
             {
                 case "LightAttackHitbox":
-                    TakeDamage(combatVals.atkDmgVals.lightAttackDmg);
+                    TakeDamage(combatVals.currentAtk.damage);
                     break;
                 case "HeavyAttackHitbox":
-                    TakeDamage(combatVals.atkDmgVals.heavyAttackDmg);
+                    TakeDamage(combatVals.currentAtk.damage);
                     break;
                 case "BeamAttackHitbox":
                     TakeDamage(combatVals.atkDmgVals.beamAttackDmg);

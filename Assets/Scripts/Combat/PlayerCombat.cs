@@ -9,8 +9,7 @@ using static UnityEngine.GridBrushBase;
 [Serializable]
 public class AttackStaminaCosts
 {
-    public float lightAttackCost;
-    public float heavyAttackCost;
+    // public float heavyAttackCost;
     public float shieldCost;
     public float beamAttackCost;
     public float beamAttackCostOT;
@@ -19,8 +18,6 @@ public class AttackStaminaCosts
 [Serializable]
 public class AttackDamageVals
 {
-    public float lightAttackDmg;
-    public float heavyAttackDmg;
 
     public float beamAttackDmg;
     public float beamAttackDmgOT;
@@ -34,16 +31,22 @@ public class PlayerObjRefs
     public GameObject lockOnCamPosObject;
 }
 
+[Serializable]
+public class HitboxObject
+{
+    public MeleeWeaponAttackScriptableObject atkData;
+    public GameObject hitboxObject;
+    public AnimatorOverrideController animatorOverride;
+}
+
 public class PlayerCombat : MonoBehaviour
 {
-    public float lightAttackDuration = 1.5f;
-    public float heavyAttackDuration = 2f;
     public float shieldDuration = 3.5f;
     public float beamAttackDuration = 3f;
     public float comboResetTime = 1.5f;
     public bool attackCurrentlyActive = false;
-    public List<MeleeWeaponAttackScriptableObject> LightAttackStrings;
-    public List<MeleeWeaponAttackScriptableObject> HeavyAttackStrings;
+    public List<HitboxObject> lightAttackStringsData;
+    public List<HitboxObject> heavyAttackStringsData;
     /* TODO - Major Notes:
      * - Planning on reworking the current attack/combat system
      * - Want to move away from simple light/heavy attack values ON the player itself
@@ -51,13 +54,12 @@ public class PlayerCombat : MonoBehaviour
      * - For all of this, going to need a weapon class with all of the aforementioned information above
      * - Player prefab must therefore have a current weapon game object attached
      */
-    public GameObject lightAttackHitbox;
-    public GameObject heavyAttackHitbox;
     public GameObject shieldHitbox;
     public GameObject beamAttackHitbox;
     [SerializeField] public PlayerObjRefs playerObjRefs;
     [SerializeField] public AttackStaminaCosts atkStaminaCosts;
     [SerializeField] public AttackDamageVals atkDmgVals;
+    [HideInInspector] public MeleeWeaponAttackScriptableObject currentAtk; // is referenced by EnemyScript.cs
 
     private PlayerMovement playerMovementComponent;
     private int comboCounter;
@@ -185,13 +187,18 @@ public class PlayerCombat : MonoBehaviour
         //check for time elapsed greater than comvo reset time OR we have reached max combo string count
         //  TODO: Still need to decide whether light attack string will have a length separate from heavy attack string
         //  OR have a global combo string size - for now, using size of the respective attack string list
-        if(Time.time - lastAttackEnd > comboResetTime || comboCounter >= LightAttackStrings.Count)
+        if(Time.time - lastAttackEnd > comboResetTime || comboCounter >= lightAttackStringsData.Count)
         {
             //reset combo counter
             comboCounter = 0;
         }
 
-        StartCoroutine(LightAttackCoroutine());
+        // check for stamina before beginning coroutine
+        if (playerStats.Stamina.TryConsume(lightAttackStringsData[comboCounter].atkData.staminaCost))
+        {
+            StartCoroutine(LightAttackCoroutine());    
+        }
+        
     }
 
    IEnumerator LightAttackCoroutine()
@@ -199,11 +206,12 @@ public class PlayerCombat : MonoBehaviour
 
         //initialize variables
         float timeElapsed = 0f;
-        MeleeWeaponAttackScriptableObject currentLightAttack = LightAttackStrings[comboCounter];
+        MeleeWeaponAttackScriptableObject currentLightAttack = lightAttackStringsData[comboCounter].atkData;
+        currentAtk = currentLightAttack;
 
         //set currently attacking to true, and activate the light attack hitbox
         attackCurrentlyActive = true;
-        lightAttackHitbox.SetActive(true);
+        lightAttackStringsData[comboCounter].hitboxObject.SetActive(true);
 
         //rotate the player in the direction of the camera
         RotatePlayerToCameraDirection();
@@ -222,13 +230,14 @@ public class PlayerCombat : MonoBehaviour
             yield return null;
         }
 
+        //set currently attacking to false, and deactivate light attack hitbox
+        attackCurrentlyActive = false;
+        lightAttackStringsData[comboCounter].hitboxObject.SetActive(false);
+        currentAtk = null;
+
         //increment combo counter and last attack end
         comboCounter++;
         lastAttackEnd = Time.time;
-
-        //set currently attacking to false, and deactivate light attack hitbox
-        attackCurrentlyActive = false;
-        lightAttackHitbox.SetActive(false);
     }
 
     private void HeavyAttackAction()
@@ -236,24 +245,29 @@ public class PlayerCombat : MonoBehaviour
         //check for time elapsed greater than combo reset time OR we have reached max combo string count
         //  TODO: Still need to decide whether light attack string will have a length separate from heavy attack string
         //  OR have a global combo string size - for now, using size of the respective attack string list
-        if (Time.time - lastAttackEnd > comboResetTime || comboCounter >= HeavyAttackStrings.Count)
+        if (Time.time - lastAttackEnd > comboResetTime || comboCounter >= heavyAttackStringsData.Count)
         {
             //reset combo counter to zero
             comboCounter = 0;
         }
 
-        StartCoroutine(HeavyAttackCoroutine());
+        if (playerStats.Stamina.TryConsume(heavyAttackStringsData[comboCounter].atkData.staminaCost))
+        {
+            StartCoroutine(HeavyAttackCoroutine());
+        }
+
     }
 
     IEnumerator HeavyAttackCoroutine()
     {
         //initialize variables
         float timeElapsed = 0f;
-        MeleeWeaponAttackScriptableObject currentHeavyAttack = HeavyAttackStrings[comboCounter];
+        MeleeWeaponAttackScriptableObject currentHeavyAttack = heavyAttackStringsData[comboCounter].atkData;
+        currentAtk = currentHeavyAttack;
 
         //set currently attacking to true, and activate heavy attack hitbox
         attackCurrentlyActive = true;
-        heavyAttackHitbox.SetActive(true);
+        heavyAttackStringsData[comboCounter].hitboxObject.SetActive(true);
 
         //rotate the player in the direction of the camera
         RotatePlayerToCameraDirection();
@@ -271,13 +285,14 @@ public class PlayerCombat : MonoBehaviour
             yield return null;
         }
 
-        ///increment combo counter and last attack end
-        comboCounter++;
-        lastAttackEnd = Time.time;
-
         //set currently attacking to false, and deactivate heavy attack hitbox
         attackCurrentlyActive = false;
-        heavyAttackHitbox.SetActive(false);
+        heavyAttackStringsData[comboCounter].hitboxObject.SetActive(false);
+        currentAtk = null;
+
+        // increment combo counter and last attack end
+        comboCounter++;
+        lastAttackEnd = Time.time;
     }
 
     private void ShieldAction()
@@ -362,19 +377,13 @@ public class PlayerCombat : MonoBehaviour
         //if player inputs light attack and no attack is currently active, then perform light attack action
         if(isLightAttacking && !attackCurrentlyActive) 
         {
-            if (playerStats.Stamina.TryConsume(atkStaminaCosts.lightAttackCost))
-            {
-                LightAttackAction();
-            }
+            LightAttackAction();
         }
 
         //if player inputs heavy no attack is currently active, then perform heavy attack action
         if (isHeavyAttacking && !attackCurrentlyActive)
         {
-            if (playerStats.Stamina.TryConsume(atkStaminaCosts.heavyAttackCost))
-            {
-                HeavyAttackAction();
-            }
+            HeavyAttackAction();
         }
 
         //if player inputs shield button and shield is currently not active, then perform shield action

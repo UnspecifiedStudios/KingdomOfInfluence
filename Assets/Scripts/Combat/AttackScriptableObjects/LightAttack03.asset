@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5ebc8a22e9b39749aba121e48cd0cb1, type: 3}
   m_Name: LightAttack03
   m_EditorClassIdentifier: Assembly-CSharp::MeleeWeaponAttackScriptableObject
-  animatorOverride: {fileID: 0}
-  damage: 0
+  uniqueID: 3
+  attackType: 1
+  damage: 10
   duration: 2
+  staminaCost: 4
   debugMsg: Light attack 3!
