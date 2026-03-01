@@ -54,6 +54,13 @@ public class EnemyScript : MonoBehaviour
     public float maxHealth = 100;
     public float currentHealth = 100;
 
+    [Header("Boss Stats")]
+    public bool isBoss = false;
+    public Canvas bossCanvas;
+    public float bossBarActivationRadius = 20f;
+    public float bossBarEmptyXPos = 493f;
+    public float bossBarFullXPos = 0f;
+
     [Header ("Enemy Battle Data")]
     [Min(0)]
     public float timeBetweenAttacks = 1.5f;
@@ -69,6 +76,7 @@ public class EnemyScript : MonoBehaviour
     private bool attackOffCooldown = true;
     private List<EnemyAttackBase> attackScripts = new List<EnemyAttackBase>();
     private EnemyHealthBar healthBar;
+    private GameObject bossBarSpriteGameObject;
 
     void Awake()
     {
@@ -77,6 +85,14 @@ public class EnemyScript : MonoBehaviour
         outerRadius = radiusToReach + outerRadTolerance;
         // get instance of healthbar
         healthBar = GetComponentInChildren<EnemyHealthBar>();
+
+        if (isBoss)
+        {
+            // get instance of bossbar
+                // ex. FrogBoss -> "fb-mask" -> fb-bar-front
+            bossBarSpriteGameObject = bossCanvas.gameObject.FindChildBySubstringName("-mask").transform.GetChild(0).gameObject;
+            Debug.Log(bossBarSpriteGameObject);
+        }
     }
     
     void Start()
@@ -118,7 +134,11 @@ public class EnemyScript : MonoBehaviour
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 5f * Time.deltaTime);
             }
         }
-           
+        if (isBoss)
+        {
+            BossBarActivationCheck();
+            CustomSliderBarUtils.UpdateBarPosition(bossBarSpriteGameObject, currentHealth, maxHealth, bossBarEmptyXPos, bossBarFullXPos);
+        }
     }
 
     public void NavToPlayerRadius()
@@ -187,10 +207,12 @@ public class EnemyScript : MonoBehaviour
         {
             Transform target = rangeChecks[0].transform;
             Vector3 directionToTarget = (target.position - transform.position).normalized;
-
+            
+            // if player is in FOV angles
             if (Vector3.Angle(transform.forward, directionToTarget) < fovAngle / 2)
             {
                 float distanceToTarget = Vector3.Distance(transform.position, target.position);
+                // if player isn't obstructed by obstacles
                 if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstructionMask))
                 {
                     canSeePlayer = true;
@@ -208,6 +230,19 @@ public class EnemyScript : MonoBehaviour
         else if (canSeePlayer)
         {
             canSeePlayer = false;
+        }
+    }
+
+    private void BossBarActivationCheck()
+    {
+        Collider[] rangeChecks = Physics.OverlapSphere(transform.position, bossBarActivationRadius, targetMask);
+        if (rangeChecks.Length != 0)
+        {
+            bossCanvas.enabled = true;
+        }
+        else
+        {
+            bossCanvas.enabled = false;
         }
     }
 
@@ -255,6 +290,10 @@ public class EnemyScript : MonoBehaviour
     public void Die()
     {
         Destroy(gameObject);
+        if (isBoss)
+        {
+            bossCanvas.enabled = false;
+        }
     }
 
     void OnTriggerEnter(Collider collisionInfo)
@@ -263,13 +302,14 @@ public class EnemyScript : MonoBehaviour
         if (collisionInfo.gameObject.transform.parent.name == "PlayerCapsule")
         {
             PlayerCombat combatVals = collisionInfo.gameObject.transform.parent.GetComponent<PlayerCombat>();
+            // TODO: Given the attack heirarchy re-organization, comparing Hitbox names might not be optimal anymore. 
             switch (collisionInfo.gameObject.name)
             {
                 case "LightAttackHitbox":
-                    TakeDamage(combatVals.atkDmgVals.lightAttackDmg);
+                    TakeDamage(combatVals.currentAtk.damage);
                     break;
                 case "HeavyAttackHitbox":
-                    TakeDamage(combatVals.atkDmgVals.heavyAttackDmg);
+                    TakeDamage(combatVals.currentAtk.damage);
                     break;
                 case "BeamAttackHitbox":
                     TakeDamage(combatVals.atkDmgVals.beamAttackDmg);

@@ -16,6 +16,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "PauseGame",
+                    "type": "Button",
+                    "id": "d2d6bd2b-e27c-4a60-a2fb-2474c1ed8eb1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Look",
                     "type": "Value",
                     "id": "6b444451-8a00-4d00-a97e-f47457f736a8",
@@ -254,6 +263,17 @@
                     "processors": "",
                     "groups": "Joystick",
                     "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bd1176fc-1aa9-4a1a-b8e5-06d49d2846e2",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "PauseGame",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -675,7 +695,7 @@
                 {
                     "name": "PauseGame",
                     "type": "Button",
-                    "id": "81f04184-f4ca-4fdc-8072-5a1b20a5206a",
+                    "id": "6fdaade3-276f-4bbe-8507-1556d945ef2f",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -1103,7 +1123,7 @@
                 },
                 {
                     "name": "",
-                    "id": "45460cb5-2237-48d2-9d57-3e459db46bd9",
+                    "id": "6c85c921-5c01-4566-8a33-c9650a421b82",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
