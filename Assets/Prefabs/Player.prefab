@@ -3566,22 +3566,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 453847ce8f9bc3f48bc94d0ee6ef7bc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
-  lightAttackDuration: 1.5
-  heavyAttackDuration: 2
   shieldDuration: 3.5
   beamAttackDuration: 3
   comboResetTime: 1.5
   attackCurrentlyActive: 0
-  LightAttackStrings:
-  - {fileID: 11400000, guid: f83ba9b888b71c945894cb1de472305c, type: 2}
-  - {fileID: 11400000, guid: 025ac94b9cf549140bf9224d03a4a508, type: 2}
-  - {fileID: 11400000, guid: 3925b30e169a2a64c9e9f883c36a1f8f, type: 2}
-  HeavyAttackStrings:
-  - {fileID: 11400000, guid: da312334e680ea14794e5042dd4aef4a, type: 2}
-  - {fileID: 11400000, guid: f8b77cbcf8e96f94586a83fd8e20a864, type: 2}
-  - {fileID: 11400000, guid: da5e2d675d2f7714885d46d560d0571b, type: 2}
-  lightAttackHitbox: {fileID: 5804074234472031569}
-  heavyAttackHitbox: {fileID: 3982609500367630134}
+  lightAttackStringsData:
+  - atkData: {fileID: 11400000, guid: f83ba9b888b71c945894cb1de472305c, type: 2}
+    hitboxObject: {fileID: 5804074234472031569}
+    animatorOverride: {fileID: 0}
+  - atkData: {fileID: 11400000, guid: 025ac94b9cf549140bf9224d03a4a508, type: 2}
+    hitboxObject: {fileID: 5804074234472031569}
+    animatorOverride: {fileID: 0}
+  - atkData: {fileID: 11400000, guid: 3925b30e169a2a64c9e9f883c36a1f8f, type: 2}
+    hitboxObject: {fileID: 5804074234472031569}
+    animatorOverride: {fileID: 0}
+  heavyAttackStringsData:
+  - atkData: {fileID: 11400000, guid: da312334e680ea14794e5042dd4aef4a, type: 2}
+    hitboxObject: {fileID: 3982609500367630134}
+    animatorOverride: {fileID: 0}
+  - atkData: {fileID: 11400000, guid: f8b77cbcf8e96f94586a83fd8e20a864, type: 2}
+    hitboxObject: {fileID: 3982609500367630134}
+    animatorOverride: {fileID: 0}
+  - atkData: {fileID: 11400000, guid: da5e2d675d2f7714885d46d560d0571b, type: 2}
+    hitboxObject: {fileID: 3982609500367630134}
+    animatorOverride: {fileID: 0}
   shieldHitbox: {fileID: 7012954181281422274}
   beamAttackHitbox: {fileID: 8371172852507313}
   playerObjRefs:
@@ -3589,16 +3597,13 @@ MonoBehaviour:
     statsObject: {fileID: 3295296543131189545}
     lockOnCamPosObject: {fileID: 2397834994946491779}
   atkStaminaCosts:
-    lightAttackCost: 3
-    heavyAttackCost: 6
     shieldCost: 4
     beamAttackCost: 20
     beamAttackCostOT: 2
   atkDmgVals:
-    lightAttackDmg: 5
-    heavyAttackDmg: 10
     beamAttackDmg: 20
     beamAttackDmgOT: 2
+  currentAtk: {fileID: 0}
 --- !u!114 &7433679925553234730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3862,7 +3867,11 @@ MonoBehaviour:
     m_ActionName: 'Player/CameraToggle[/Keyboard/tab]'
   - m_PersistentCalls:
       m_Calls: []
-    m_ActionId: 81f04184-f4ca-4fdc-8072-5a1b20a5206a
+    m_ActionId: d2d6bd2b-e27c-4a60-a2fb-2474c1ed8eb1
+    m_ActionName: 'Player/PauseGame[/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6fdaade3-276f-4bbe-8507-1556d945ef2f
     m_ActionName: 'UI/PauseGame[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
