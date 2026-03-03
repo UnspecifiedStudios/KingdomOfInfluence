@@ -200,6 +200,11 @@ MonoBehaviour:
   navDestRefreshTime: 0.2
   maxHealth: 100
   currentHealth: 100
+  isBoss: 0
+  bossCanvas: {fileID: 0}
+  bossBarActivationRadius: 20
+  bossBarEmptyXPos: 493
+  bossBarFullXPos: 0
   timeBetweenAttacks: 5
   intermittentAttackWait: 1
   attackGameObjects:
