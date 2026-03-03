@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f5ebc8a22e9b39749aba121e48cd0cb1, type: 3}
-  m_Name: LightAttack01
+  m_Name: BeamAttack
   m_EditorClassIdentifier: Assembly-CSharp::MeleeWeaponAttackScriptableObject
-  uniqueID: 1
-  attackType: 1
-  attackClass: 1
+  uniqueID: 7
+  attackType: 2
+  attackClass: 3
   damage: 5
-  duration: 0.5
-  staminaCost: 3
-  debugMsg: Light attack 1!
+  duration: 3
+  staminaCost: 10
+  continousHitrate: 0.2
+  debugMsg: BeamAttack

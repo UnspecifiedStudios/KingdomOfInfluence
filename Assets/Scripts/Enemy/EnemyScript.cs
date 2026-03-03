@@ -77,6 +77,8 @@ public class EnemyScript : MonoBehaviour
     private List<EnemyAttackBase> attackScripts = new List<EnemyAttackBase>();
     private EnemyHealthBar healthBar;
     private GameObject bossBarSpriteGameObject;
+    private PlayerCombat.HitboxObject lastAttackHit;
+    private Dictionary<int, float> damageTimers = new Dictionary<int, float>();
 
     void Awake()
     {
@@ -302,25 +304,50 @@ public class EnemyScript : MonoBehaviour
         if (collisionInfo.gameObject.transform.parent.name == "PlayerCapsule")
         {
             PlayerCombat combatVals = collisionInfo.gameObject.transform.parent.GetComponent<PlayerCombat>();
-            // TODO: Given the attack heirarchy re-organization, comparing Hitbox names might not be optimal anymore. 
-            switch (collisionInfo.gameObject.name)
+            if (combatVals.currentAtk.atkData.attackType == MeleeWeaponAttackScriptableObject.AttackType.Single)
             {
-                case "LightAttackHitbox":
-                    TakeDamage(combatVals.currentAtk.damage);
-                    break;
-                case "HeavyAttackHitbox":
-                    TakeDamage(combatVals.currentAtk.damage);
-                    break;
-                case "BeamAttackHitbox":
-                    TakeDamage(combatVals.atkDmgVals.beamAttackDmg);
-                    break;
-                default:
-                    // error, did not find correct box
-                    break;
+                // take damage
+                TakeDamage(combatVals.currentAtk.atkData.damage);
             }
         }
     }
 
+    void OnTriggerStay(Collider collisionInfo)
+    {
+        if (collisionInfo.gameObject.transform.parent.name == "PlayerCapsule")
+        {
+            PlayerCombat combatVals = collisionInfo.gameObject.transform.parent.GetComponent<PlayerCombat>();
+            if (combatVals.currentAtk.atkData.attackType == MeleeWeaponAttackScriptableObject.AttackType.Continous)
+            {
+                int atkID = combatVals.currentAtk.atkData.uniqueID;
+                if (!damageTimers.ContainsKey(atkID))
+                {
+                    damageTimers[atkID] = 0f;
+                }
 
+                damageTimers[atkID] += Time.fixedDeltaTime;
+
+                if (damageTimers[atkID] >= combatVals.currentAtk.atkData.continousHitrate)
+                {
+                    damageTimers[atkID] = 0f;
+                    TakeDamage(combatVals.currentAtk.atkData.damage);
+                }
+            }
+        }
+    }
+
+    void OnTriggerExit(Collider collisionInfo)
+    {
+        // is a hitbox?
+        if (collisionInfo.gameObject.transform.parent.name == "PlayerCapsule")
+        {
+            PlayerCombat combatVals = collisionInfo.gameObject.transform.parent.GetComponent<PlayerCombat>();
+
+            if (combatVals.currentAtk.atkData.attackType == MeleeWeaponAttackScriptableObject.AttackType.Continous)
+            {
+                damageTimers.Remove(combatVals.currentAtk.atkData.uniqueID);
+            }
+        }
+    }
 
 }

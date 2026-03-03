@@ -5,6 +5,7 @@ using System.Timers;
 using UnityEditor.Rendering.Canvas.ShaderGraph;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Security.Cryptography;
 
 [Serializable]
 public class MovementSettings
@@ -55,6 +56,7 @@ public class PlayerMovement : MonoBehaviour
     private Animator playerAnimator;
     private int runStaminaCostMult = 10;
     private bool isCurrentlyRunning = false;
+    private bool currentlyAttackingFlag = false;
 
     /* TODO: Need to have discussion on dependencies between our scripts.
      *       What we have now, however, is perfectly. But down the line,
@@ -160,7 +162,40 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         // only do if not dodging OR currently attacking
-        if (isDodging || playerCombatComponent.attackCurrentlyActive) return;
+        if (isDodging)
+        {
+            // play dodge animation
+            return;
+        } 
+
+        // handle attack starting
+        if (playerCombatComponent.attackCurrentlyActive && !currentlyAttackingFlag)
+        {   
+            currentlyAttackingFlag = true;
+            playerAnimator.SetInteger("moveCode", 0);
+
+            // check if we need an override
+            if (playerCombatComponent.currentAtk.animatorOverride == null)
+            {   
+                PlayAttackAnimation(playerCombatComponent.currentAtk.atkData.attackClass);
+            }
+            
+            return;
+        }
+        
+        // handle attack ending
+        if (!playerCombatComponent.attackCurrentlyActive && currentlyAttackingFlag)
+        {
+            currentlyAttackingFlag = false;
+            return;
+        }
+        
+        // if attack is still active, do nothing
+        if (playerCombatComponent.attackCurrentlyActive)
+        {
+            return;
+        }
+        
 
         // calculate camera-relative directions
         Vector3 forward = cameraTransform.forward;
@@ -286,4 +321,28 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void PlayAttackAnimation(MeleeWeaponAttackScriptableObject.AttackClass attackClass)
+    {
+        switch (attackClass)
+        {
+            case MeleeWeaponAttackScriptableObject.AttackClass.Light:
+                playerAnimator.SetTrigger("attackLight");
+                break;
+            case MeleeWeaponAttackScriptableObject.AttackClass.Heavy:
+                playerAnimator.SetTrigger("attackHeavy");
+                break;
+            case MeleeWeaponAttackScriptableObject.AttackClass.Special:
+                //playerAnimator.SetTrigger("attackSpecial");
+                break;
+            case MeleeWeaponAttackScriptableObject.AttackClass.Other:
+                //playerAnimator.SetTrigger("attackOther");
+                break;
+            case MeleeWeaponAttackScriptableObject.AttackClass.None:
+                //playerAnimator.SetTrigger("attackNone");
+                break;
+            default:
+                Debug.LogWarning($"Unhandled attack class: {attackClass}");
+                break;
+        }
+    }
 }

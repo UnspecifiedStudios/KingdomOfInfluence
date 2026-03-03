@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MeleeWeaponAttackScriptableObject
   uniqueID: 2
   attackType: 1
+  attackClass: 1
   damage: 7
   duration: 1
   staminaCost: 3

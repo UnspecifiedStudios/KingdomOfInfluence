@@ -9,18 +9,7 @@ using static UnityEngine.GridBrushBase;
 [Serializable]
 public class AttackStaminaCosts
 {
-    // public float heavyAttackCost;
     public float shieldCost;
-    public float beamAttackCost;
-    public float beamAttackCostOT;
-}
-
-[Serializable]
-public class AttackDamageVals
-{
-
-    public float beamAttackDmg;
-    public float beamAttackDmgOT;
 }
 
 [Serializable]
@@ -31,22 +20,22 @@ public class PlayerObjRefs
     public GameObject lockOnCamPosObject;
 }
 
-[Serializable]
-public class HitboxObject
-{
-    public MeleeWeaponAttackScriptableObject atkData;
-    public GameObject hitboxObject;
-    public AnimatorOverrideController animatorOverride;
-}
-
 public class PlayerCombat : MonoBehaviour
 {
+    [Serializable]
+    public class HitboxObject
+    {
+        public MeleeWeaponAttackScriptableObject atkData;
+        public GameObject hitboxObject;
+        public AnimatorOverrideController animatorOverride;
+    }
+
     public float shieldDuration = 3.5f;
-    public float beamAttackDuration = 3f;
     public float comboResetTime = 1.5f;
     public bool attackCurrentlyActive = false;
     public List<HitboxObject> lightAttackStringsData;
     public List<HitboxObject> heavyAttackStringsData;
+    public List<HitboxObject> beamAttackData;
     /* TODO - Major Notes:
      * - Planning on reworking the current attack/combat system
      * - Want to move away from simple light/heavy attack values ON the player itself
@@ -58,8 +47,7 @@ public class PlayerCombat : MonoBehaviour
     public GameObject beamAttackHitbox;
     [SerializeField] public PlayerObjRefs playerObjRefs;
     [SerializeField] public AttackStaminaCosts atkStaminaCosts;
-    [SerializeField] public AttackDamageVals atkDmgVals;
-    [HideInInspector] public MeleeWeaponAttackScriptableObject currentAtk; // is referenced by EnemyScript.cs
+    [HideInInspector] public HitboxObject currentAtk; // is referenced by EnemyScript.cs and PlayerMovement.cs
 
     private PlayerMovement playerMovementComponent;
     private int comboCounter;
@@ -207,7 +195,7 @@ public class PlayerCombat : MonoBehaviour
         //initialize variables
         float timeElapsed = 0f;
         MeleeWeaponAttackScriptableObject currentLightAttack = lightAttackStringsData[comboCounter].atkData;
-        currentAtk = currentLightAttack;
+        currentAtk = lightAttackStringsData[comboCounter];
 
         //set currently attacking to true, and activate the light attack hitbox
         attackCurrentlyActive = true;
@@ -263,7 +251,7 @@ public class PlayerCombat : MonoBehaviour
         //initialize variables
         float timeElapsed = 0f;
         MeleeWeaponAttackScriptableObject currentHeavyAttack = heavyAttackStringsData[comboCounter].atkData;
-        currentAtk = currentHeavyAttack;
+        currentAtk = heavyAttackStringsData[comboCounter];
 
         //set currently attacking to true, and activate heavy attack hitbox
         attackCurrentlyActive = true;
@@ -326,23 +314,30 @@ public class PlayerCombat : MonoBehaviour
 
     private void BeamAttackAction()
     {
-        StartCoroutine(BeamAttackCoroutine());
+        // check if can fire beam before beginning coroutine
+        // TODO: if player stamina runs out, stop beam attack early
+        if (playerStats.Stamina.TryConsume(beamAttackData[0].atkData.staminaCost))
+        {
+            StartCoroutine(BeamAttackCoroutine());
+        }
+        
     }
 
     IEnumerator BeamAttackCoroutine()
     {
         //initialize variables
         float timeElapsed = 0f;
+        currentAtk = beamAttackData[0];
 
         //set currently attacking to true, and activate beam hitbox
         attackCurrentlyActive = true;
-        beamAttackHitbox.SetActive(true);
+        beamAttackData[0].hitboxObject.SetActive(true);
 
         //rotate the player in the direction of the camera
         RotatePlayerToCameraDirection();
 
         //while elapsed time is less than beam duration
-        while (timeElapsed < beamAttackDuration)
+        while (timeElapsed < beamAttackData[0].atkData.duration)
         {
             //update elapsed time
             timeElapsed += Time.deltaTime;
@@ -353,7 +348,7 @@ public class PlayerCombat : MonoBehaviour
 
         //set currently attacking to false, and deactivate beam hitbox
         attackCurrentlyActive = false;
-        beamAttackHitbox.SetActive(false);
+        beamAttackData[0].hitboxObject.SetActive(false);
     }
 
     /* TOMAYBE: May want to change this to a Quaternion return instead; and make this function simply only
@@ -398,10 +393,7 @@ public class PlayerCombat : MonoBehaviour
         //if player inputs beam button and beam is currently not active, then perform beam action
         if(isBeamAttacking && !attackCurrentlyActive)
         {
-            if (playerStats.Stamina.TryConsume(atkStaminaCosts.beamAttackCost))
-            {
-                BeamAttackAction();
-            }
+            BeamAttackAction();
         }
     }
 }
