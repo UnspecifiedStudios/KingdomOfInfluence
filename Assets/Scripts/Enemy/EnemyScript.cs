@@ -79,6 +79,7 @@ public class EnemyScript : MonoBehaviour
     private GameObject bossBarSpriteGameObject;
     private PlayerCombat.HitboxObject lastAttackHit;
     private Dictionary<int, float> damageTimers = new Dictionary<int, float>();
+    private PlayerCombat combatVals;
 
     void Awake()
     {
@@ -301,9 +302,8 @@ public class EnemyScript : MonoBehaviour
     void OnTriggerEnter(Collider collisionInfo)
     {
         // is a hitbox?
-        if (collisionInfo.gameObject.transform.parent.name == "PlayerCapsule")
+        if (IsValidHitbox(collisionInfo))
         {
-            PlayerCombat combatVals = collisionInfo.gameObject.transform.parent.GetComponent<PlayerCombat>();
             if (combatVals.currentAtk.atkData.attackType == MeleeWeaponAttackScriptableObject.AttackType.Single)
             {
                 // take damage
@@ -314,9 +314,8 @@ public class EnemyScript : MonoBehaviour
 
     void OnTriggerStay(Collider collisionInfo)
     {
-        if (collisionInfo.gameObject.transform.parent.name == "PlayerCapsule")
+        if (IsValidHitbox(collisionInfo))
         {
-            PlayerCombat combatVals = collisionInfo.gameObject.transform.parent.GetComponent<PlayerCombat>();
             if (combatVals.currentAtk.atkData.attackType == MeleeWeaponAttackScriptableObject.AttackType.Continous)
             {
                 int atkID = combatVals.currentAtk.atkData.uniqueID;
@@ -337,17 +336,30 @@ public class EnemyScript : MonoBehaviour
     }
 
     void OnTriggerExit(Collider collisionInfo)
-    {
+    {   
         // is a hitbox?
-        if (collisionInfo.gameObject.transform.parent.name == "PlayerCapsule")
+        if (IsValidHitbox(collisionInfo))
         {
-            PlayerCombat combatVals = collisionInfo.gameObject.transform.parent.GetComponent<PlayerCombat>();
-
             if (combatVals.currentAtk.atkData.attackType == MeleeWeaponAttackScriptableObject.AttackType.Continous)
             {
                 damageTimers.Remove(combatVals.currentAtk.atkData.uniqueID);
             }
         }
+    }
+
+    private bool IsValidHitbox(Collider collInfo)
+    {
+        // if there's no current combatValues found, attempt to retrieve
+        if (combatVals == null)
+        {
+            // if found, assign 
+            combatVals = collInfo.GetComponentInParent<PlayerCombat>();
+        }
+
+        // TODO: TOFIX: BUG: this check returns if the HitboxOwnerIdentifier exists. Will introduce bug 
+        // if enemy shouldn't damage another enemy, and enemy uses this component
+        HitboxOwnerIdentifier hitOwner = collInfo.GetComponent<HitboxOwnerIdentifier>();
+        return hitOwner != null;
     }
 
 }
