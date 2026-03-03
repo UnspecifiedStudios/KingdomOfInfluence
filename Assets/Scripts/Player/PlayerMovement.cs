@@ -54,6 +54,7 @@ public class PlayerMovement : MonoBehaviour
     private bool hasJumped = false;
     private Animator playerAnimator;
     private int runStaminaCostMult = 10;
+    private bool isCurrentlyRunning = false;
 
     /* TODO: Need to have discussion on dependencies between our scripts.
      *       What we have now, however, is perfectly. But down the line,
@@ -175,16 +176,17 @@ public class PlayerMovement : MonoBehaviour
         Vector3 movement = forward * moveInput.y + right * moveInput.x;
 
         // check if user is sprinting and apply move multiplier
-        // TODO: Implement a check to see if user has enough stamina before running
         if (isHoldingRun && playerStats.Stamina.TryConsume(ablSettings.runStaminaCost * Time.deltaTime * runStaminaCostMult))
         {
             movement *= moveSettings.defaultSpeed * moveSettings.sprintSpeedMult;
-            playerAnimator.SetBool("isRunning", true);
+            isCurrentlyRunning = true;
+            //playerAnimator.SetBool("isRunning", true);
         }
         else
         {
-            playerAnimator.SetBool("isRunning", false);
+            //playerAnimator.SetBool("isRunning", false);
             movement *= moveSettings.defaultSpeed;
+            isCurrentlyRunning = false;
         }
 
         // apply gravity 
@@ -196,7 +198,8 @@ public class PlayerMovement : MonoBehaviour
             // make them jump
             if (playerStats.Stamina.TryConsume(ablSettings.jumpStaminaCost))
             {
-                playerAnimator.SetBool("isJumping", true);
+                //playerAnimator.SetBool("isJumping", true);
+                playerAnimator.SetTrigger("Jump");
                 verticalVelocity = ablSettings.jumpForce;
                 hasJumped = true;
             }
@@ -210,7 +213,15 @@ public class PlayerMovement : MonoBehaviour
         if(movement.x != 0 && movement.z != 0)
         {   
             // set animation
-            playerAnimator.SetBool("isWalking", true);
+            //playerAnimator.SetBool("isWalking", true);
+            if (isCurrentlyRunning)
+            {
+                playerAnimator.SetInteger("moveCode", 2);
+            }
+            else
+            {
+                playerAnimator.SetInteger("moveCode", 1);
+            }
 
             // instantiate new vector thats copied from movement, but with y-axis/gravity zeroed out
             Vector3 movementWithoutGrav = new Vector3(movement.x, 0, movement.z);
@@ -223,7 +234,8 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            playerAnimator.SetBool("isWalking", false);
+            //playerAnimator.SetBool("isWalking", false);
+            playerAnimator.SetInteger("moveCode", 0);
         }
     }
 
@@ -231,10 +243,16 @@ public class PlayerMovement : MonoBehaviour
     {
         if (controller.isGrounded && verticalVelocity < 0f)
         {
-            playerAnimator.SetBool("isJumping", false);
-            // set to -3 if on floor
-            verticalVelocity = moveSettings.gravity; // gravity is applied to reduce/eliminate slope bouncing
+            playerAnimator.SetBool("isGrounded", true);
+            //playerAnimator.SetBool("isJumping", false);
+            // gravity is applied to reduce/eliminate slope bouncing
+            // BUG TODO: when player slides off surface, it's at the speed of gravity and not 0
+            verticalVelocity = moveSettings.gravity; 
             hasJumped = false;
+        }
+        else if (!controller.isGrounded)
+        {
+            playerAnimator.SetBool("isGrounded", false);
         }
         
         // if the velocity is negative
