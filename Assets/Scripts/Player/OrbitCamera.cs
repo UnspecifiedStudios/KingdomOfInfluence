@@ -1,23 +1,39 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 
 public class OrbitCamera : MonoBehaviour
 {
+    [Serializable]
+    public enum CameraMouseInteraction
+    {
+        None,
+        Allow, 
+        Prevent,
+        Other
+    }
+    [Serializable]
+    public class CameraOverrideController
+    {
+        public Transform overrideCam;
+        public CameraMouseInteraction mouseRule;
+    }
+    
     public Transform player;
     public float distance = 5f;
     public float sensitivity = 0.15f;
     public float minY = -20f;
     public float maxY = 80f;
     public float verticalOffset = 1f;
-    public GameObject lockOnCameraPosition;
-    [HideInInspector] public bool currentlyLockingOn = false;
+
+
     public float transitionDuration = 0.2f;
 
     private float yaw;
     private float pitch;
     private Vector2 lookInput;
     // camera smoothing vars
-    private bool wasLockingOn;
+
     private bool isTransitioning;
     private float transitionTimer;
     private Vector3 startPos;
@@ -26,6 +42,12 @@ public class OrbitCamera : MonoBehaviour
     private Quaternion targetRot;
     private Vector3 dynamicTargetPos;
     private Quaternion dynamicTargetRot;
+
+    // assistance
+    
+    public CameraOverrideController activeOverrideCamera;
+    private Transform previousOverrideCamera;
+
 
     private void Awake()
     {
@@ -39,7 +61,7 @@ public class OrbitCamera : MonoBehaviour
     private void LateUpdate()
     {
         // calculate mouse inputs
-        if (!currentlyLockingOn)
+        if (activeOverrideCamera.mouseRule != CameraMouseInteraction.Prevent)
         {
             yaw += lookInput.x * sensitivity;
             pitch -= lookInput.y * sensitivity;
@@ -47,10 +69,10 @@ public class OrbitCamera : MonoBehaviour
         }
 
         // start transition if change in bool detected
-        if (currentlyLockingOn != wasLockingOn)
+        if (activeOverrideCamera.overrideCam != previousOverrideCamera)
         {
             StartTransition();
-            wasLockingOn = currentlyLockingOn;
+            previousOverrideCamera = activeOverrideCamera.overrideCam;
         }
 
         // transition logic
@@ -64,10 +86,10 @@ public class OrbitCamera : MonoBehaviour
             // ease-out cubic (basically fast start, slow finish)
             float easedProgress = 1f - Mathf.Pow(1f - transitionProgress, 3f);
 
-            if (currentlyLockingOn)
+            if (activeOverrideCamera.overrideCam != null)
             {
-                dynamicTargetPos = lockOnCameraPosition.transform.position;
-                dynamicTargetRot = lockOnCameraPosition.transform.rotation;
+                dynamicTargetPos = activeOverrideCamera.overrideCam.position;
+                dynamicTargetRot = activeOverrideCamera.overrideCam.rotation;
             }
             else
             {
@@ -81,7 +103,17 @@ public class OrbitCamera : MonoBehaviour
             }
             // lerp/slerp rotatation & position
             transform.position = Vector3.Lerp(startPos, dynamicTargetPos, easedProgress);
-            transform.rotation = Quaternion.Slerp(startRot, dynamicTargetRot, easedProgress);
+
+            if (activeOverrideCamera != null && activeOverrideCamera.mouseRule == CameraMouseInteraction.Allow)
+            {
+                // allow mouse rotation during transition
+                transform.rotation = Quaternion.Euler(pitch, yaw, 0);
+            }
+            else
+            {
+                transform.rotation = Quaternion.Slerp(startRot, dynamicTargetRot, easedProgress);
+            }
+            
 
             // check if done transitioning
             if (transitionProgress >= 1f)
@@ -92,10 +124,20 @@ public class OrbitCamera : MonoBehaviour
         else
         {
             // normal, nontransition logic
-            if (currentlyLockingOn)
+            if (activeOverrideCamera != null && activeOverrideCamera.overrideCam != null)
             {
-                transform.position = lockOnCameraPosition.transform.position;
-                transform.rotation = lockOnCameraPosition.transform.rotation;
+                if (activeOverrideCamera.mouseRule == CameraMouseInteraction.Prevent)
+                {
+                    // Fully locked
+                    transform.position = activeOverrideCamera.overrideCam.position;
+                    transform.rotation = activeOverrideCamera.overrideCam.rotation;
+                }
+                else
+                {
+                    // beam logic 
+                    transform.position = activeOverrideCamera.overrideCam.position;
+                    transform.rotation = Quaternion.Euler(pitch, yaw, 0);
+                }
             }
             else
             {
@@ -120,10 +162,10 @@ public class OrbitCamera : MonoBehaviour
         startPos = transform.position;
         startRot = transform.rotation;
 
-        if (currentlyLockingOn)
+        if (activeOverrideCamera.overrideCam != null)
         {
-            targetPos = lockOnCameraPosition.transform.position;
-            targetRot = lockOnCameraPosition.transform.rotation;
+            targetPos = activeOverrideCamera.overrideCam.position;
+            targetRot = activeOverrideCamera.overrideCam.rotation;
         }
         else
         {

@@ -28,6 +28,7 @@ public class PlayerCombat : MonoBehaviour
         public MeleeWeaponAttackScriptableObject atkData;
         public GameObject hitboxObject;
         public AnimatorOverrideController animatorOverride;
+        public GameObject additionalGameObjArg;
     }
 
     public float shieldDuration = 3.5f;
@@ -35,7 +36,8 @@ public class PlayerCombat : MonoBehaviour
     public bool attackCurrentlyActive = false;
     public List<HitboxObject> lightAttackStringsData;
     public List<HitboxObject> heavyAttackStringsData;
-    public List<HitboxObject> beamAttackData;
+    public HitboxObject beamAttackData;
+
     /* TODO - Major Notes:
      * - Planning on reworking the current attack/combat system
      * - Want to move away from simple light/heavy attack values ON the player itself
@@ -44,7 +46,9 @@ public class PlayerCombat : MonoBehaviour
      * - Player prefab must therefore have a current weapon game object attached
      */
     public GameObject shieldHitbox;
-    public GameObject beamAttackHitbox;
+    public Transform lockOnCameraLocation;
+    public Transform beamAttackCameraLocation;
+
     [SerializeField] public PlayerObjRefs playerObjRefs;
     [SerializeField] public AttackStaminaCosts atkStaminaCosts;
     [HideInInspector] public HitboxObject currentAtk; // is referenced by EnemyScript.cs and PlayerMovement.cs
@@ -62,6 +66,7 @@ public class PlayerCombat : MonoBehaviour
     private PlayerStats playerStats;
     private TargetingManager targetingMngr;
     private bool isLockedOn = false;
+    private bool beamAttackActive = false;
     
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -87,13 +92,29 @@ public class PlayerCombat : MonoBehaviour
         {   
             // toggle bool
             isLockedOn = !isLockedOn;
-            // set bool in orbit camera
-            orbCamBehavior.currentlyLockingOn = isLockedOn;
 
             if (isLockedOn)
             {
+                // give camera the correct location of lock-on mode 
+                orbCamBehavior.activeOverrideCamera.overrideCam = lockOnCameraLocation;
+                orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.Prevent;
+                
                 // tell lockon manager to re-calculate best target
                 targetingMngr.EnableLockOn();
+            }
+            else
+            {
+                if (beamAttackActive)
+                {
+                    orbCamBehavior.activeOverrideCamera.overrideCam = beamAttackCameraLocation;
+                    orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.Allow;
+                }
+                else
+                {
+                    orbCamBehavior.activeOverrideCamera.overrideCam = null;
+                    orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.None;
+                }
+                
             }
         }
     }
@@ -316,7 +337,7 @@ public class PlayerCombat : MonoBehaviour
     {
         // check if can fire beam before beginning coroutine
         // TODO: if player stamina runs out, stop beam attack early
-        if (playerStats.Stamina.TryConsume(beamAttackData[0].atkData.staminaCost))
+        if (playerStats.Stamina.TryConsume(beamAttackData.atkData.staminaCost))
         {
             StartCoroutine(BeamAttackCoroutine());
         }
@@ -327,20 +348,43 @@ public class PlayerCombat : MonoBehaviour
     {
         //initialize variables
         float timeElapsed = 0f;
-        currentAtk = beamAttackData[0];
+        currentAtk = beamAttackData;
 
         //set currently attacking to true, and activate beam hitbox
         attackCurrentlyActive = true;
-        beamAttackData[0].hitboxObject.SetActive(true);
+        beamAttackData.hitboxObject.SetActive(true);
+        beamAttackActive = true;
+        bool lockOnDiff = !isLockedOn;
+        if (!isLockedOn)
+        {
+            orbCamBehavior.activeOverrideCamera.overrideCam = beamAttackCameraLocation;
+            orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.Allow;
+        }
+        
 
         //rotate the player in the direction of the camera
         RotatePlayerToCameraDirection();
 
         //while elapsed time is less than beam duration
-        while (timeElapsed < beamAttackData[0].atkData.duration)
+        while (timeElapsed < beamAttackData.atkData.duration)
         {
             //update elapsed time
             timeElapsed += Time.deltaTime;
+            
+            if (isLockedOn != lockOnDiff)
+            {
+                lockOnDiff = !isLockedOn;
+                if (!isLockedOn)
+                {
+                    orbCamBehavior.activeOverrideCamera.overrideCam = beamAttackCameraLocation;
+                    orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.Allow;
+                }
+                else
+                {
+                    orbCamBehavior.activeOverrideCamera.overrideCam = lockOnCameraLocation;
+                    orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.Prevent;
+                }
+            }
 
             //yield return to resume in the next frame
             yield return null;
@@ -348,7 +392,21 @@ public class PlayerCombat : MonoBehaviour
 
         //set currently attacking to false, and deactivate beam hitbox
         attackCurrentlyActive = false;
-        beamAttackData[0].hitboxObject.SetActive(false);
+        beamAttackData.hitboxObject.SetActive(false);
+        beamAttackActive = false;
+
+        if (isLockedOn)
+        {
+            orbCamBehavior.activeOverrideCamera.overrideCam = lockOnCameraLocation;
+            orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.Prevent;
+        }
+        else
+        {
+            orbCamBehavior.activeOverrideCamera.overrideCam = null;
+            orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.None;
+        }
+        
+
     }
 
     /* TOMAYBE: May want to change this to a Quaternion return instead; and make this function simply only
@@ -364,6 +422,28 @@ public class PlayerCombat : MonoBehaviour
         //calculate rotation direction from camera plane direction, then apply rotation to player transform
         Quaternion rotationDirection = Quaternion.LookRotation(cameraPlaneDirection, Vector3.up);
         transform.rotation = rotationDirection;
+    }
+
+    private void RotateBeamToCameraDirection()
+    {
+        Transform cam = playerObjRefs.cameraReference.transform;
+        Transform beamRotPoint = beamAttackData.additionalGameObjArg.transform;
+
+        Ray ray = new Ray(cam.position, cam.forward);
+        RaycastHit hit;
+
+        Vector3 targetPoint;
+
+        if (Physics.Raycast(ray, out hit, 100f, ~LayerMask.GetMask("Target", "Ignore Raycast", "UI")))
+        {
+            targetPoint = hit.point;
+        }
+        else
+        {
+            targetPoint = cam.position + cam.forward * 100f;
+        }
+        Vector3 direction = targetPoint - beamRotPoint.position;
+        beamRotPoint.rotation = Quaternion.LookRotation(direction);
     }
 
     // Update is called once per frame
@@ -394,6 +474,12 @@ public class PlayerCombat : MonoBehaviour
         if(isBeamAttacking && !attackCurrentlyActive)
         {
             BeamAttackAction();
+        }
+        
+        if (beamAttackActive)
+        {
+            RotatePlayerToCameraDirection();
+            RotateBeamToCameraDirection();
         }
     }
 }
