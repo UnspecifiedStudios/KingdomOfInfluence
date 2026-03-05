@@ -67,6 +67,7 @@ public class PlayerCombat : MonoBehaviour
     private TargetingManager targetingMngr;
     private bool isLockedOn = false;
     private bool beamAttackActive = false;
+    [HideInInspector] public bool disableAttacking = false;  // currently handled by DialogueManager.cs
     
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -449,6 +450,11 @@ public class PlayerCombat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (disableAttacking)
+        {
+            return;
+        }
+
         //if player inputs light attack and no attack is currently active, then perform light attack action
         if(isLightAttacking && !attackCurrentlyActive) 
         {

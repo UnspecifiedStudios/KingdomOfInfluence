@@ -47,6 +47,7 @@ public class OrbitCamera : MonoBehaviour
     
     public CameraOverrideController activeOverrideCamera;
     private Transform previousOverrideCamera;
+    [HideInInspector] public bool mouseMovementDisabled = false;  // currently handled by DialogueManager.cs
 
 
     private void Awake()
@@ -60,6 +61,10 @@ public class OrbitCamera : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (mouseMovementDisabled)
+        {
+            return;
+        }
         // calculate mouse inputs
         if (activeOverrideCamera.mouseRule != CameraMouseInteraction.Prevent)
         {

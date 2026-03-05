@@ -20,6 +20,14 @@ public class DialogueManager : MonoBehaviour
     [SerializeField]
     private List<(Button button, TMP_Text buttonText)> choicesButtons;
 
+    // player component
+    private PlayerMovement playerMvt;
+    // player combat component
+    private PlayerCombat playerCbt;
+    // camera component
+    private OrbitCamera playerCam;
+
+
     void Awake()
     {
         // initialize list of choice buttons and their text components
@@ -37,12 +45,21 @@ public class DialogueManager : MonoBehaviour
                 choicesButtons.Add((btn, txt));
             }
         }
+
+        playerMvt = gameObject.GetComponent<PlayerMovement>();
+        playerCbt = gameObject.GetComponent<PlayerCombat>();
+        playerCam = playerCbt.playerObjRefs.cameraReference.GetComponent<OrbitCamera>();
     }
 
     public void StartDialogue(string npcID, DialogueNode startNode)
     {
         // get current node for the npc
+        
+        
         DialogueNode currentNode = GetCurrentNode(npcID, startNode);
+
+        // disable player mechanics
+        HandlePlayerMechanicPrevention(startNode.lockingMechanisms);
 
         // populate UI with current node data
         dialogueText.text = currentNode.dialogueText;
@@ -100,11 +117,56 @@ public class DialogueManager : MonoBehaviour
         {
             choicesButtons[buttonIndex].button.onClick.AddListener(() =>
             {
-                    // update current node based on choice selected
-                    currentNodes[npcID] = currentNodes[npcID].choices[buttonIndex].nextNode;
+                // update current node based on choice selected
 
-                    // restart dialogue with updated node
-                    StartDialogue(npcID, currentNodes[npcID]);
+
+                DialogueChoice redirectNode = currentNodes[npcID].choices[buttonIndex];
+
+                // if conditional met, go to new node
+                if (redirectNode.branchConditional?.questsToCheck?.Count > 0)
+                {
+                    Debug.Log("Quest Check List exists. Beginning Check.");
+                    bool andConditionalCheck = true;
+                    foreach (QuestData questCheck in redirectNode.branchConditional.questsToCheck)
+                    {
+                        Debug.Log($"Checking Quest with ID: {questCheck.questID}");
+                        if (!questManager.activeQuests.ContainsKey(questCheck.questID))
+                        {
+                            Debug.Log("Quest doesn't exist. Abort.");
+                            andConditionalCheck = false;
+                            break;
+                        }
+                        if (questManager.activeQuests[questCheck.questID].status != QuestStatus.Completed)
+                        {
+                            Debug.Log("Quest is not complete. Abort.");
+                            andConditionalCheck = false;
+                            break;
+                        }
+                        else
+                        {
+                            Debug.Log("Quest is completed!");
+                        }
+                    }
+
+                    Debug.Log("Checking Conditional...");
+                    if (andConditionalCheck)
+                    {
+                        Debug.Log("Quest List identified as Completed. Assigning Next dialogue node.");
+                        currentNodes[npcID] = redirectNode.branchConditional.dialogueToBranchTo;
+                    }
+                    else
+                    {
+                        Debug.Log("Quest List identified as INcomplete. Resuming Normal operation.");
+                        currentNodes[npcID] = redirectNode.nextNode;
+                    }
+                }
+                else
+                {
+                    currentNodes[npcID] = redirectNode.nextNode;
+                }
+
+                // restart dialogue with updated node
+                StartDialogue(npcID, currentNodes[npcID]);
             });
         }
 
@@ -130,6 +192,7 @@ public class DialogueManager : MonoBehaviour
             choicesButtons[buttonIndex].button.onClick.AddListener(() =>
             {
                 EndDialogue();
+                HandlePlayerMechanicPrevention(DialogueNode.PlayerLockMechanism.None);
             });
         }
         if ((actions & DialogueChoiceAction.UpdateReputation) != 0)
@@ -139,5 +202,12 @@ public class DialogueManager : MonoBehaviour
                 reputationManager.UpdateReputation(npcID, currentNodes[npcID].choices[buttonIndex].repChange);
             });
         }
+    }
+
+    private void HandlePlayerMechanicPrevention(DialogueNode.PlayerLockMechanism lockMech)
+    {
+        playerCam.mouseMovementDisabled = (lockMech & DialogueNode.PlayerLockMechanism.Camera) != 0;
+        playerMvt.lockMovement = (lockMech & DialogueNode.PlayerLockMechanism.Movement) != 0;
+        playerCbt.disableAttacking = (lockMech & DialogueNode.PlayerLockMechanism.Attacks) != 0;
     }
 }

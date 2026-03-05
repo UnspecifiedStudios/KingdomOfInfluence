@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [System.Flags]
 public enum DialogueChoiceAction
@@ -14,12 +15,20 @@ public enum DialogueChoiceAction
 [System.Serializable]
 public class DialogueChoice
 {
+    [System.Serializable]
+    public class ConditionalQuestBranch
+    {
+        public DialogueNode dialogueToBranchTo;
+        public List<QuestData> questsToCheck;
+    }
     [Tooltip("The dialogue text that players see on button")]
     public string choiceText;
     [Tooltip("Required reputation to display this choice")]
     public int requiredRep;
     [Tooltip("What actions to perform when this choice is selected")]
     public DialogueChoiceAction actions;
+    [Tooltip("zach work")]
+    public ConditionalQuestBranch branchConditional;
     [Tooltip("The quest associated with this choice")]
     public QuestData questData;
     [Tooltip("The reputation change when this choice is selected +/-")]

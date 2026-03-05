@@ -57,6 +57,9 @@ public class PlayerMovement : MonoBehaviour
     private int runStaminaCostMult = 10;
     private bool isCurrentlyRunning = false;
     private bool currentlyAttackingFlag = false;
+    [HideInInspector] public bool lockMovement = false; // currently handled by DialogeManager.cs
+    private QuestManager questManager;
+    
 
     /* TODO: Need to have discussion on dependencies between our scripts.
      *       What we have now, however, is perfectly. But down the line,
@@ -70,6 +73,7 @@ public class PlayerMovement : MonoBehaviour
         controller = GetComponent<CharacterController>();
         playerCombatComponent = GetComponent<PlayerCombat>();
         playerAnimator = playerAnimatorObject.GetComponent<Animator>();
+        questManager = GetComponent<QuestManager>();
     }
 
     /*
@@ -116,7 +120,7 @@ public class PlayerMovement : MonoBehaviour
      */
     public void OnDodge(InputAction.CallbackContext context)
     {
-        if (context.performed && !isDodging && playerStats.Stamina.TryConsume(ablSettings.dodgeStaminaCost)) 
+        if (!lockMovement && context.performed && !isDodging && playerStats.Stamina.TryConsume(ablSettings.dodgeStaminaCost)) 
         {
             Vector3 forward = cameraTransform.forward;
             Vector3 right = cameraTransform.right;
@@ -161,7 +165,7 @@ public class PlayerMovement : MonoBehaviour
     // FixedUpdate (main movement)
     void Update()
     {
-        // only do if not dodging OR currently attacking
+        // only do if not dodging 
         if (isDodging)
         {
             // play dodge animation
@@ -182,6 +186,13 @@ public class PlayerMovement : MonoBehaviour
             
             return;
         }
+
+        // lock movement
+        if (lockMovement)
+        {
+            return;
+        } 
+
         
         // handle attack ending
         if (!playerCombatComponent.attackCurrentlyActive && currentlyAttackingFlag)
@@ -237,6 +248,10 @@ public class PlayerMovement : MonoBehaviour
                 playerAnimator.SetTrigger("Jump");
                 verticalVelocity = ablSettings.jumpForce;
                 hasJumped = true;
+                
+                // update quest involving jump
+                // monk training quest
+                questManager.UpdateQuestProgress("MonkTrainQuest");
             }
         }
 
