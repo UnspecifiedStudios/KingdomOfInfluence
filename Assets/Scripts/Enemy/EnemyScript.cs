@@ -168,6 +168,7 @@ public class EnemyScript : MonoBehaviour
         // enemy is just right
         else
         {
+            agent.ResetPath();
             if (attackOffCooldown)
             {
                 StartCoroutine(AttackPlayer());    
