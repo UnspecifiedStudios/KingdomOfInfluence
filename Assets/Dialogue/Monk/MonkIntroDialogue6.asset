@@ -10,15 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 21a9af804e2cb764fa8d7740c50b9800, type: 3}
-  m_Name: NoThanksTime
+  m_Name: MonkIntroDialogue6
   m_EditorClassIdentifier: Assembly-CSharp::DialogueNode
   speakerName: 
   dialogueText: bruh why
   lockingMechanisms: -1
   choices:
-  - choiceText: idk man
+  - choiceText: idk man lemme try again
     requiredRep: 0
     actions: 9
+    branchConditional:
+      dialogueToBranchTo: {fileID: 0}
+      questsToCheck: []
     questData: {fileID: 0}
     repChange: 0
     nextNode: {fileID: 11400000, guid: 0785bde20e4f190468cfd1ec738b7aef, type: 2}

@@ -14,5 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::QuestData
   questID: MonkTrainQuest
   questName: Monk Training
-  questDescription: Train with the Monk
-  requiredProgress: 0
+  questDescription: 'Train with the Monk
+
+    (Jump 5 times)'
+  requiredProgress: 5
