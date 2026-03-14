@@ -40,9 +40,7 @@ public class Health : MonoBehaviour
     private void Update()
     {
         // update the health bar
-        positionDifference = barFullXPosition - barEmptyXPosition;
-        healthBarPosition = -1 * (positionDifference - ((CurrentHealth / maxHealth) * positionDifference));
-        healthBar.transform.localPosition = new UnityEngine.Vector3(healthBarPosition, 0f, 0f);
+        CustomSliderBarUtils.UpdateBarPosition(healthBar, CurrentHealth, maxHealth, barEmptyXPosition, barFullXPosition);
     }
 
     public void Damage(float amount)

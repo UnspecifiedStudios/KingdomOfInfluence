@@ -1,44 +1,86 @@
+using NUnit.Framework;
+using System;
 using System.Collections;
-using System.Diagnostics.Contracts;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.GridBrushBase;
+
+[Serializable]
+public class AttackStaminaCosts
+{
+    public float shieldCost;
+}
+
+[Serializable]
+public class PlayerObjRefs
+{
+    public GameObject cameraReference;
+    public GameObject statsObject;
+    public GameObject lockOnCamPosObject;
+}
 
 public class PlayerCombat : MonoBehaviour
 {
-    public float lightAttackDuration = 1.5f;
-    public float heavyAttackDuration = 2f;
-    public float shieldDuration = 3.5f;
-    public float beamAttackDuration = 3f;
-    public int currentCameraIndex = 0;
-    public int cameraListSize = 2;
-    public GameObject lightAttackHitbox;
-    public GameObject heavyAttackHitbox;
-    public GameObject shieldHitbox;
-    public GameObject beamAttackHitbox;
-    public Transform[] cameraTransformsList;
+    [Serializable]
+    public class HitboxObject
+    {
+        public MeleeWeaponAttackScriptableObject atkData;
+        public GameObject hitboxObject;
+        public AnimatorOverrideController animatorOverride;
+        public GameObject additionalGameObjArg;
+    }
 
-    PlayerMovement playerMovementComponent;
+    public float shieldDuration = 3.5f;
+    public float comboResetTime = 1.5f;
+    public bool attackCurrentlyActive = false;
+    public List<HitboxObject> lightAttackStringsData;
+    public List<HitboxObject> heavyAttackStringsData;
+    public HitboxObject beamAttackData;
+
+    /* TODO - Major Notes:
+     * - Planning on reworking the current attack/combat system
+     * - Want to move away from simple light/heavy attack values ON the player itself
+     * - Instead, have every weapon carry its own damage, duration, animation values and unique list of combo strings
+     * - For all of this, going to need a weapon class with all of the aforementioned information above
+     * - Player prefab must therefore have a current weapon game object attached
+     */
+    public GameObject shieldHitbox;
+    public Transform lockOnCameraLocation;
+    public Transform beamAttackCameraLocation;
+
+    [SerializeField] public PlayerObjRefs playerObjRefs;
+    [SerializeField] public AttackStaminaCosts atkStaminaCosts;
+    [HideInInspector] public HitboxObject currentAtk; // is referenced by EnemyScript.cs and PlayerMovement.cs
+
+    private PlayerMovement playerMovementComponent;
+    private int comboCounter;
+    private float lastAttackEnd;
     private bool isLightAttacking = false;
     private bool isHeavyAttacking = false;
     private bool isBeamAttacking = false;
     private bool isShielding = false;
-    private bool attackCurrentlyActive = false;
     private bool shieldCurrentlyActive = false;
+
+    private OrbitCamera orbCamBehavior;
+    private PlayerStats playerStats;
+    private TargetingManager targetingMngr;
+    private bool isLockedOn = false;
+    private bool beamAttackActive = false;
+    [HideInInspector] public bool disableAttacking = false;  // currently handled by DialogueManager.cs
     
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         //Get the PlayerMovement component/script that is also attached to this PlayerCapsule gameObject
+        // Get references/components to every object used in script
         playerMovementComponent = gameObject.GetComponentInParent<PlayerMovement>();
+        orbCamBehavior = playerObjRefs.cameraReference.GetComponent<OrbitCamera>();
+        playerStats = playerObjRefs.statsObject.GetComponent<PlayerStats>();
+        targetingMngr = playerObjRefs.lockOnCamPosObject.GetComponent<TargetingManager>();
 
-        //Setting current camera to the regular main camera at startt attached to th
-        currentCameraIndex = 0;
-        
-        //Setting the main camera as active, and ensure that lock on camera is not active at the start
-        cameraTransformsList[currentCameraIndex].gameObject.SetActive(true);
-        cameraTransformsList[currentCameraIndex + 1].gameObject.SetActive(false);
-        playerMovementComponent.cameraTransform = cameraTransformsList[currentCameraIndex];
+        comboCounter = 0;
     }
 
     /* Read user input to check if they pressed the camera toggle input via
@@ -48,18 +90,33 @@ public class PlayerCombat : MonoBehaviour
     {
         //Check if the button was pressed
         if(context.performed)
-        {
-            //Deactivate the current camera
-            cameraTransformsList[currentCameraIndex].gameObject.SetActive(false);
+        {   
+            // toggle bool
+            isLockedOn = !isLockedOn;
 
-            //Cycle the camera index (for now, its just cycling between 0 and 1)
-            currentCameraIndex = (currentCameraIndex + 1) % cameraListSize;
-
-            //Activate the new current camera with the new camera index
-            cameraTransformsList[currentCameraIndex].gameObject.SetActive(true);
-
-            //Set the PlayerMovement component's cameraTransform to the new camera
-            playerMovementComponent.cameraTransform = cameraTransformsList[currentCameraIndex];
+            if (isLockedOn)
+            {
+                // give camera the correct location of lock-on mode 
+                orbCamBehavior.activeOverrideCamera.overrideCam = lockOnCameraLocation;
+                orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.Prevent;
+                
+                // tell lockon manager to re-calculate best target
+                targetingMngr.EnableLockOn();
+            }
+            else
+            {
+                if (beamAttackActive)
+                {
+                    orbCamBehavior.activeOverrideCamera.overrideCam = beamAttackCameraLocation;
+                    orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.Allow;
+                }
+                else
+                {
+                    orbCamBehavior.activeOverrideCamera.overrideCam = null;
+                    orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.None;
+                }
+                
+            }
         }
     }
 
@@ -137,20 +194,44 @@ public class PlayerCombat : MonoBehaviour
 
     private void LightAttackAction()
     {
-        StartCoroutine(LightAttackCoroutine());
+        //check for time elapsed greater than comvo reset time OR we have reached max combo string count
+        //  TODO: Still need to decide whether light attack string will have a length separate from heavy attack string
+        //  OR have a global combo string size - for now, using size of the respective attack string list
+        if(Time.time - lastAttackEnd > comboResetTime || comboCounter >= lightAttackStringsData.Count)
+        {
+            //reset combo counter
+            comboCounter = 0;
+        }
+
+        // check for stamina before beginning coroutine
+        if (playerStats.Stamina.TryConsume(lightAttackStringsData[comboCounter].atkData.staminaCost))
+        {
+            StartCoroutine(LightAttackCoroutine());    
+        }
+        
     }
 
    IEnumerator LightAttackCoroutine()
     {
+
         //initialize variables
         float timeElapsed = 0f;
+        MeleeWeaponAttackScriptableObject currentLightAttack = lightAttackStringsData[comboCounter].atkData;
+        currentAtk = lightAttackStringsData[comboCounter];
 
         //set currently attacking to true, and activate the light attack hitbox
         attackCurrentlyActive = true;
-        lightAttackHitbox.SetActive(true);
+        lightAttackStringsData[comboCounter].hitboxObject.SetActive(true);
+
+        //rotate the player in the direction of the camera
+        RotatePlayerToCameraDirection();
+
+        //TODO: play animation at the current combo attack at the current index in the light attack list
+        Debug.Log(currentLightAttack.debugMsg);
 
         //keep light attack hitbox active while elapsed time is less than attack duration
-        while (timeElapsed < lightAttackDuration)
+        // (going to need anim duration for this)
+        while (timeElapsed < currentLightAttack.duration)
         {
             //update elapsed time
             timeElapsed += Time.deltaTime;
@@ -161,25 +242,51 @@ public class PlayerCombat : MonoBehaviour
 
         //set currently attacking to false, and deactivate light attack hitbox
         attackCurrentlyActive = false;
-        lightAttackHitbox.SetActive(false);
+        lightAttackStringsData[comboCounter].hitboxObject.SetActive(false);
+        currentAtk = null;
+
+        //increment combo counter and last attack end
+        comboCounter++;
+        lastAttackEnd = Time.time;
     }
 
     private void HeavyAttackAction()
     {
-        StartCoroutine(HeavyAttackCoroutine());
+        //check for time elapsed greater than combo reset time OR we have reached max combo string count
+        //  TODO: Still need to decide whether light attack string will have a length separate from heavy attack string
+        //  OR have a global combo string size - for now, using size of the respective attack string list
+        if (Time.time - lastAttackEnd > comboResetTime || comboCounter >= heavyAttackStringsData.Count)
+        {
+            //reset combo counter to zero
+            comboCounter = 0;
+        }
+
+        if (playerStats.Stamina.TryConsume(heavyAttackStringsData[comboCounter].atkData.staminaCost))
+        {
+            StartCoroutine(HeavyAttackCoroutine());
+        }
+
     }
 
     IEnumerator HeavyAttackCoroutine()
     {
         //initialize variables
         float timeElapsed = 0f;
+        MeleeWeaponAttackScriptableObject currentHeavyAttack = heavyAttackStringsData[comboCounter].atkData;
+        currentAtk = heavyAttackStringsData[comboCounter];
 
         //set currently attacking to true, and activate heavy attack hitbox
         attackCurrentlyActive = true;
-        heavyAttackHitbox.SetActive(true);
+        heavyAttackStringsData[comboCounter].hitboxObject.SetActive(true);
+
+        //rotate the player in the direction of the camera
+        RotatePlayerToCameraDirection();
+
+        //TODO: play animation at the current combo attack at the current index in the heavy attack list
+        Debug.Log(currentHeavyAttack.debugMsg);
 
         //while elapsed time is less than attack duration
-        while (timeElapsed < heavyAttackDuration)
+        while (timeElapsed < currentHeavyAttack.duration)
         {
             //update elapsed time
             timeElapsed += Time.deltaTime;
@@ -190,7 +297,12 @@ public class PlayerCombat : MonoBehaviour
 
         //set currently attacking to false, and deactivate heavy attack hitbox
         attackCurrentlyActive = false;
-        heavyAttackHitbox.SetActive(false);
+        heavyAttackStringsData[comboCounter].hitboxObject.SetActive(false);
+        currentAtk = null;
+
+        // increment combo counter and last attack end
+        comboCounter++;
+        lastAttackEnd = Time.time;
     }
 
     private void ShieldAction()
@@ -224,23 +336,56 @@ public class PlayerCombat : MonoBehaviour
 
     private void BeamAttackAction()
     {
-        StartCoroutine(BeamAttackCoroutine());
+        // check if can fire beam before beginning coroutine
+        // TODO: if player stamina runs out, stop beam attack early
+        if (playerStats.Stamina.TryConsume(beamAttackData.atkData.staminaCost))
+        {
+            StartCoroutine(BeamAttackCoroutine());
+        }
+        
     }
 
     IEnumerator BeamAttackCoroutine()
     {
         //initialize variables
         float timeElapsed = 0f;
+        currentAtk = beamAttackData;
 
         //set currently attacking to true, and activate beam hitbox
         attackCurrentlyActive = true;
-        beamAttackHitbox.SetActive(true);
+        beamAttackData.hitboxObject.SetActive(true);
+        beamAttackActive = true;
+        bool lockOnDiff = !isLockedOn;
+        if (!isLockedOn)
+        {
+            orbCamBehavior.activeOverrideCamera.overrideCam = beamAttackCameraLocation;
+            orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.Allow;
+        }
+        
+
+        //rotate the player in the direction of the camera
+        RotatePlayerToCameraDirection();
 
         //while elapsed time is less than beam duration
-        while (timeElapsed < beamAttackDuration)
+        while (timeElapsed < beamAttackData.atkData.duration)
         {
             //update elapsed time
             timeElapsed += Time.deltaTime;
+            
+            if (isLockedOn != lockOnDiff)
+            {
+                lockOnDiff = !isLockedOn;
+                if (!isLockedOn)
+                {
+                    orbCamBehavior.activeOverrideCamera.overrideCam = beamAttackCameraLocation;
+                    orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.Allow;
+                }
+                else
+                {
+                    orbCamBehavior.activeOverrideCamera.overrideCam = lockOnCameraLocation;
+                    orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.Prevent;
+                }
+            }
 
             //yield return to resume in the next frame
             yield return null;
@@ -248,12 +393,68 @@ public class PlayerCombat : MonoBehaviour
 
         //set currently attacking to false, and deactivate beam hitbox
         attackCurrentlyActive = false;
-        beamAttackHitbox.SetActive(false);
+        beamAttackData.hitboxObject.SetActive(false);
+        beamAttackActive = false;
+
+        if (isLockedOn)
+        {
+            orbCamBehavior.activeOverrideCamera.overrideCam = lockOnCameraLocation;
+            orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.Prevent;
+        }
+        else
+        {
+            orbCamBehavior.activeOverrideCamera.overrideCam = null;
+            orbCamBehavior.activeOverrideCamera.mouseRule = OrbitCamera.CameraMouseInteraction.None;
+        }
+        
+
+    }
+
+    /* TOMAYBE: May want to change this to a Quaternion return instead; and make this function simply only
+     *          get the current direction of the camera on the (x,z) plane. This then could be used
+     *          anywhere else down the line where we need the camera's direction on the (x,z) plane.
+     */
+    private void RotatePlayerToCameraDirection()
+    {
+        //initialize variables
+        Vector3 cameraPlaneDirection = new Vector3(playerObjRefs.cameraReference.transform.forward.x, 0,
+                                              playerObjRefs.cameraReference.transform.forward.z);
+
+        //calculate rotation direction from camera plane direction, then apply rotation to player transform
+        Quaternion rotationDirection = Quaternion.LookRotation(cameraPlaneDirection, Vector3.up);
+        transform.rotation = rotationDirection;
+    }
+
+    private void RotateBeamToCameraDirection()
+    {
+        Transform cam = playerObjRefs.cameraReference.transform;
+        Transform beamRotPoint = beamAttackData.additionalGameObjArg.transform;
+
+        Ray ray = new Ray(cam.position, cam.forward);
+        RaycastHit hit;
+
+        Vector3 targetPoint;
+
+        if (Physics.Raycast(ray, out hit, 100f, ~LayerMask.GetMask("Target", "Ignore Raycast", "UI")))
+        {
+            targetPoint = hit.point;
+        }
+        else
+        {
+            targetPoint = cam.position + cam.forward * 100f;
+        }
+        Vector3 direction = targetPoint - beamRotPoint.position;
+        beamRotPoint.rotation = Quaternion.LookRotation(direction);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (disableAttacking)
+        {
+            return;
+        }
+
         //if player inputs light attack and no attack is currently active, then perform light attack action
         if(isLightAttacking && !attackCurrentlyActive) 
         {
@@ -269,13 +470,22 @@ public class PlayerCombat : MonoBehaviour
         //if player inputs shield button and shield is currently not active, then perform shield action
         if (isShielding && !shieldCurrentlyActive)
         {
-            ShieldAction();
+            if (playerStats.Stamina.TryConsume(atkStaminaCosts.shieldCost))
+            {
+                ShieldAction();
+            }
         }
 
         //if player inputs beam button and beam is currently not active, then perform beam action
         if(isBeamAttacking && !attackCurrentlyActive)
         {
             BeamAttackAction();
+        }
+        
+        if (beamAttackActive)
+        {
+            RotatePlayerToCameraDirection();
+            RotateBeamToCameraDirection();
         }
     }
 }

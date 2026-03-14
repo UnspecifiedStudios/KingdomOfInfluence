@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21a9af804e2cb764fa8d7740c50b9800, type: 3}
+  m_Name: MonkIntroDialogue5
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueNode
+  speakerName: Monk
+  dialogueText: Gah! You're still weak. Come back to me once you've trained!
+  lockingMechanisms: -1
+  choices:
+  - choiceText: ...
+    requiredRep: 0
+    actions: 9
+    branchConditional:
+      dialogueToBranchTo: {fileID: 0}
+      questsToCheck: []
+    questData: {fileID: 0}
+    repChange: 0
+    nextNode: {fileID: 11400000, guid: 9cd7b1f81f5892942bc3a56a5f1a459e, type: 2}

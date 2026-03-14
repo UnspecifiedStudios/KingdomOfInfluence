@@ -47,12 +47,15 @@ public class QuestManager : MonoBehaviour
     }
 
     public void UpdateQuestProgress(string questID)
-    {
-        QuestRuntimeData quest = activeQuests[questID];
-        quest.currentProgress += 1;
-        if (quest.currentProgress >= quest.requiredProgress)
+    {   
+        if (activeQuests.ContainsKey(questID))
         {
-            CompleteQuest(questID);
+            QuestRuntimeData quest = activeQuests[questID];
+            quest.currentProgress += 1;
+            if (quest.currentProgress >= quest.requiredProgress)
+            {
+                CompleteQuest(questID);
+            }
         }
     }
 

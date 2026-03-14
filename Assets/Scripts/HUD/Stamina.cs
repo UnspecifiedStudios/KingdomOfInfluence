@@ -30,9 +30,7 @@ public class Stamina : MonoBehaviour
     private void Update()
     {
         Regenerate();
-        positionDifference = barFullXPosition - barEmptyXPosition;
-        staminaBarPosition = -1 * (positionDifference - ((CurrentStamina / maxStamina) * positionDifference));
-        staminaBar.transform.localPosition = new Vector3(staminaBarPosition, 0f, 0f);
+        CustomSliderBarUtils.UpdateBarPosition(staminaBar, CurrentStamina, maxStamina, barEmptyXPosition, barFullXPosition);
     }
 
     public bool TryConsume(float amount)

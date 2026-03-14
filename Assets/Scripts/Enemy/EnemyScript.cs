@@ -54,6 +54,13 @@ public class EnemyScript : MonoBehaviour
     public float maxHealth = 100;
     public float currentHealth = 100;
 
+    [Header("Boss Stats")]
+    public bool isBoss = false;
+    public Canvas bossCanvas;
+    public float bossBarActivationRadius = 20f;
+    public float bossBarEmptyXPos = 493f;
+    public float bossBarFullXPos = 0f;
+
     [Header ("Enemy Battle Data")]
     [Min(0)]
     public float timeBetweenAttacks = 1.5f;
@@ -68,12 +75,27 @@ public class EnemyScript : MonoBehaviour
     private bool currentlyNavigating = false;
     private bool attackOffCooldown = true;
     private List<EnemyAttackBase> attackScripts = new List<EnemyAttackBase>();
+    private EnemyHealthBar healthBar;
+    private GameObject bossBarSpriteGameObject;
+    private PlayerCombat.HitboxObject lastAttackHit;
+    private Dictionary<int, float> damageTimers = new Dictionary<int, float>();
+    private PlayerCombat combatVals;
 
     void Awake()
     {
         // calculate radii tolerances
         innerRadius = radiusToReach - innerRadTolerance;
         outerRadius = radiusToReach + outerRadTolerance;
+        // get instance of healthbar
+        healthBar = GetComponentInChildren<EnemyHealthBar>();
+
+        if (isBoss)
+        {
+            // get instance of bossbar
+                // ex. FrogBoss -> "fb-mask" -> fb-bar-front
+            bossBarSpriteGameObject = bossCanvas.gameObject.FindChildBySubstringName("-mask").transform.GetChild(0).gameObject;
+            Debug.Log(bossBarSpriteGameObject);
+        }
     }
     
     void Start()
@@ -87,6 +109,8 @@ public class EnemyScript : MonoBehaviour
             attackScripts.Add(obj.GetComponent<EnemyAttackBase>());
         }
         StartCoroutine(FOVRoutine());
+
+        healthBar.UpdateHealthBar(currentHealth, maxHealth);
     }
 
     void Update()
@@ -113,7 +137,11 @@ public class EnemyScript : MonoBehaviour
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 5f * Time.deltaTime);
             }
         }
-           
+        if (isBoss)
+        {
+            BossBarActivationCheck();
+            CustomSliderBarUtils.UpdateBarPosition(bossBarSpriteGameObject, currentHealth, maxHealth, bossBarEmptyXPos, bossBarFullXPos);
+        }
     }
 
     public void NavToPlayerRadius()
@@ -140,6 +168,7 @@ public class EnemyScript : MonoBehaviour
         // enemy is just right
         else
         {
+            agent.ResetPath();
             if (attackOffCooldown)
             {
                 StartCoroutine(AttackPlayer());    
@@ -182,10 +211,12 @@ public class EnemyScript : MonoBehaviour
         {
             Transform target = rangeChecks[0].transform;
             Vector3 directionToTarget = (target.position - transform.position).normalized;
-
+            
+            // if player is in FOV angles
             if (Vector3.Angle(transform.forward, directionToTarget) < fovAngle / 2)
             {
                 float distanceToTarget = Vector3.Distance(transform.position, target.position);
+                // if player isn't obstructed by obstacles
                 if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstructionMask))
                 {
                     canSeePlayer = true;
@@ -203,6 +234,19 @@ public class EnemyScript : MonoBehaviour
         else if (canSeePlayer)
         {
             canSeePlayer = false;
+        }
+    }
+
+    private void BossBarActivationCheck()
+    {
+        Collider[] rangeChecks = Physics.OverlapSphere(transform.position, bossBarActivationRadius, targetMask);
+        if (rangeChecks.Length != 0)
+        {
+            bossCanvas.enabled = true;
+        }
+        else
+        {
+            bossCanvas.enabled = false;
         }
     }
 
@@ -236,4 +280,87 @@ public class EnemyScript : MonoBehaviour
         // turn off bool to allow attacking again
         attackOffCooldown = true;
     }
+
+    public void TakeDamage(float damageAmount)
+    {
+        currentHealth -= damageAmount;
+        healthBar.UpdateHealthBar(currentHealth, maxHealth);
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    public void Die()
+    {
+        Destroy(gameObject);
+        if (isBoss)
+        {
+            bossCanvas.enabled = false;
+        }
+    }
+
+    void OnTriggerEnter(Collider collisionInfo)
+    {
+        // is a hitbox?
+        if (IsValidHitbox(collisionInfo))
+        {
+            if (combatVals.currentAtk.atkData.attackType == MeleeWeaponAttackScriptableObject.AttackType.Single)
+            {
+                // take damage
+                TakeDamage(combatVals.currentAtk.atkData.damage);
+            }
+        }
+    }
+
+    void OnTriggerStay(Collider collisionInfo)
+    {
+        if (IsValidHitbox(collisionInfo))
+        {
+            if (combatVals.currentAtk.atkData.attackType == MeleeWeaponAttackScriptableObject.AttackType.Continous)
+            {
+                int atkID = combatVals.currentAtk.atkData.uniqueID;
+                if (!damageTimers.ContainsKey(atkID))
+                {
+                    damageTimers[atkID] = 0f;
+                }
+
+                damageTimers[atkID] += Time.fixedDeltaTime;
+
+                if (damageTimers[atkID] >= combatVals.currentAtk.atkData.continousHitrate)
+                {
+                    damageTimers[atkID] = 0f;
+                    TakeDamage(combatVals.currentAtk.atkData.damage);
+                }
+            }
+        }
+    }
+
+    void OnTriggerExit(Collider collisionInfo)
+    {   
+        // is a hitbox?
+        if (IsValidHitbox(collisionInfo))
+        {
+            if (combatVals.currentAtk.atkData.attackType == MeleeWeaponAttackScriptableObject.AttackType.Continous)
+            {
+                damageTimers.Remove(combatVals.currentAtk.atkData.uniqueID);
+            }
+        }
+    }
+
+    private bool IsValidHitbox(Collider collInfo)
+    {
+        // if there's no current combatValues found, attempt to retrieve
+        if (combatVals == null)
+        {
+            // if found, assign 
+            combatVals = collInfo.GetComponentInParent<PlayerCombat>();
+        }
+
+        // TODO: TOFIX: BUG: this check returns if the HitboxOwnerIdentifier exists. Will introduce bug 
+        // if enemy shouldn't damage another enemy, and enemy uses this component
+        HitboxOwnerIdentifier hitOwner = collInfo.GetComponent<HitboxOwnerIdentifier>();
+        return hitOwner != null;
+    }
+
 }
