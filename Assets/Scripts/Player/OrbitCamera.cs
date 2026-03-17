@@ -176,22 +176,19 @@ public class OrbitCamera : MonoBehaviour
             {
                 case CameraMouseInteraction.None:
                     // being used when no camera override is in place
-                    Debug.Log("CamRule = None");
                     CursorManager.Instance.LockCursor();
                     break;
                 case CameraMouseInteraction.Prevent:
-                    // prevent means mouse does not rotate camera. Dialogue Manager uses this for dialogue choices
-                    Debug.Log("CamRule = Prevent");
-                    CursorManager.Instance.UnlockCursor();
+                    // is currently only used when locking onto target
+                    CursorManager.Instance.LockCursor();
                     break;
                 case CameraMouseInteraction.Allow:
-                    // camera can be rotated
-                    Debug.Log("CamRule = Allow");
+                    // is currently only used when Beam attacking
                     CursorManager.Instance.LockCursor();
                     break;
                 case CameraMouseInteraction.Other:
                     // not currently used
-                    Debug.Log("CamRule = Other");
+                    Debug.Log("activeOverrideCamera.mouseRule = Other");
                     break;
                 default:
                     Debug.LogWarning("Camera activeOverrideCamera.mouseRule is unknown.");
