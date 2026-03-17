@@ -61,6 +61,7 @@ public class OrbitCamera : MonoBehaviour
 
     private void LateUpdate()
     {
+        // currently handled by dialogue manager to lock you out of camera movement during dialogue
         if (mouseMovementDisabled)
         {
             return;
@@ -155,6 +156,49 @@ public class OrbitCamera : MonoBehaviour
                 transform.LookAt(targetPosition);
             }
         }
+    }
+
+    private void FixedUpdate()
+    {
+        if (activeOverrideCamera == null)
+        {
+            CursorManager.Instance.LockCursor();
+        }
+        else if (mouseMovementDisabled)
+        {
+            // currently Dialogue manager handles this. so, at the moment, only unlock the cursor here
+            // later if-checks need to be done
+            CursorManager.Instance.UnlockCursor();
+        }
+        else
+        {
+            switch (activeOverrideCamera.mouseRule)
+            {
+                case CameraMouseInteraction.None:
+                    // being used when no camera override is in place
+                    Debug.Log("CamRule = None");
+                    CursorManager.Instance.LockCursor();
+                    break;
+                case CameraMouseInteraction.Prevent:
+                    // prevent means mouse does not rotate camera. Dialogue Manager uses this for dialogue choices
+                    Debug.Log("CamRule = Prevent");
+                    CursorManager.Instance.UnlockCursor();
+                    break;
+                case CameraMouseInteraction.Allow:
+                    // camera can be rotated
+                    Debug.Log("CamRule = Allow");
+                    CursorManager.Instance.LockCursor();
+                    break;
+                case CameraMouseInteraction.Other:
+                    // not currently used
+                    Debug.Log("CamRule = Other");
+                    break;
+                default:
+                    Debug.LogWarning("Camera activeOverrideCamera.mouseRule is unknown.");
+                    break;
+            }
+        }
+        
     }
 
     private void StartTransition()

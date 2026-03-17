@@ -56,6 +56,7 @@ GameObject:
   - component: {fileID: 2018814036668893954}
   - component: {fileID: 228487209102432931}
   - component: {fileID: 5249642301955754782}
+  - component: {fileID: 1871996629358497975}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -195,6 +196,19 @@ MonoBehaviour:
   activeOverrideCamera:
     overrideCam: {fileID: 0}
     mouseRule: 0
+  mouseMovementDisabled: 0
+--- !u!114 &1871996629358497975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 28355977326600070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4882da17e3959349b2674987638d7b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CursorManager
 --- !u!1 &92094703582219493
 GameObject:
   m_ObjectHideFlags: 0
@@ -2960,6 +2974,7 @@ MonoBehaviour:
     runStaminaCost: 2
   cameraTransform: {fileID: 6226469922405975647}
   playerAnimatorObject: {fileID: 5647112488254455454}
+  lockMovement: 0
 --- !u!114 &525830378010353670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3020,6 +3035,7 @@ MonoBehaviour:
     hitboxObject: {fileID: 0}
     animatorOverride: {fileID: 0}
     additionalGameObjArg: {fileID: 0}
+  disableAttacking: 0
 --- !u!114 &7110433313880353836
 MonoBehaviour:
   m_ObjectHideFlags: 0
