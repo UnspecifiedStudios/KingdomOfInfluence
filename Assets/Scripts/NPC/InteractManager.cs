@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class InteractManager : MonoBehaviour
 {
     private IInteractable currentInteractable;
+    public GameObject interactionPrompt; // UI element to show when player can interact
 
     // function called by input system when interact action is performed
     // calls the interact function on the currently registered interactable
@@ -20,6 +21,7 @@ public class InteractManager : MonoBehaviour
     public void RegisterInteractable(IInteractable interactable)
     {
         currentInteractable = interactable;
+        interactionPrompt.SetActive(true); // show interaction prompt
         Debug.Log(currentInteractable + " registered as current interactable.");
     }
 
@@ -29,5 +31,6 @@ public class InteractManager : MonoBehaviour
     {
         if (currentInteractable == interactable)
             currentInteractable = null;
+            interactionPrompt.SetActive(false);
     }
 }
